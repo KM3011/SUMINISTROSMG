@@ -1,0 +1,114 @@
+﻿
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuracion de la Empresa - Meygo ERP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="">
+    <div class="sidebar">
+        
+        <img src="" alt="Meygo Logo" class="sidebar-logo">
+        <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
+        <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
+        <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
+        <a href="finances.html" class="nav-item"><i class="ph ph-chart-line-up"></i> Finanzas</a>
+        <a href="receivables.html" class="nav-item"><i class="ph ph-hand-coins"></i> CxC</a>
+        <a href="clients.html" class="nav-item"><i class="ph ph-users"></i> Clientes</a>
+        <a href="users.html" class="nav-item"><i class="ph ph-users-three"></i> Usuarios</a>
+        <a href="settings.html" class="nav-item active"><i class="ph ph-gear"></i> Ajustes</a>
+        <a href="logout.html" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div>
+                <h1>Configuracion de la Empresa</h1>
+                <p>Personaliza los datos y correlativos de facturacion.</p>
+            </div>
+        </div>
+
+        
+        <div style="background-color: var(--success); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <i class="ph ph-check-circle"></i> Configuracion actualizada exitosamente.
+        </div>
+        
+
+        <form action="settings.html" method="POST">
+            <div class="settings-grid">
+                <!-- Informacion Corporativa -->
+                <div class="settings-card stagger-1">
+                    <div class="settings-card-header">
+                        <i class="ph ph-buildings"></i> InformaciÃ³n Corporativa
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre de la Empresa</label>
+                        <input type="text" name="company_name" value="" required>
+                    </div>
+                    <div class="form-group">
+                        <label>RIF Corporativo</label>
+                        <input type="text" name="company_rif" value="" required>
+                    </div>
+                    <div class="form-group">
+                        <label>DirecciÃ³n Fiscal</label>
+                        <input type="text" name="company_address" value="" required>
+                    </div>
+                    <div class="form-group">
+                        <label>InformaciÃ³n de Contacto (TelÃ©fonos / Correos)</label>
+                        <input type="text" name="company_phone" value="" required>
+                    </div>
+                </div>
+
+                <!-- Detalles Tecnicos -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <!-- Correlativos -->
+                    <div class="settings-card stagger-2">
+                        <div class="settings-card-header">
+                            <i class="ph ph-list-numbers"></i> Correlativos de Documentos
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Especifica el prÃ³ximo nÃºmero de control para cada tipo de documento.</p>
+                        <div class="form-row" style="margin-bottom: 0;">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>PrÃ³xima Factura</label>
+                                    <input type="number" name="next_factura" value="" min="1" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>PrÃ³ximo Presupuesto</label>
+                                    <input type="number" name="next_presupuesto" value="" min="1" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>PrÃ³xima Nota de Entrega</label>
+                            <input type="number" name="next_nota" value="" min="1" required>
+                        </div>
+                    </div>
+
+                    <!-- Informacion de Pago -->
+                    <div class="settings-card stagger-3">
+                        <div class="settings-card-header">
+                            <i class="ph ph-bank"></i> InformaciÃ³n de Pago en PDF
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Este texto se estamparÃ¡ al final de todos los PDFs generados. Puedes usar saltos de lÃ­nea.</p>
+                        <div class="form-group">
+                            <textarea name="payment_info" rows="4" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; resize: vertical;" required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right; margin-top: 1rem;" class="stagger-3">
+                <button type="submit" class="btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem;"><i class="ph ph-floppy-disk"></i> Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,93 @@
+﻿
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Documentos - Meygo ERP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="">
+    <div class="sidebar">
+        
+        <img src="" alt="Meygo Logo" class="sidebar-logo">
+        <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
+        <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
+        <a href="documents_registry.html" class="nav-item active"><i class="ph ph-folders"></i> Documentos</a>
+        <a href="finances.html" class="nav-item"><i class="ph ph-chart-line-up"></i> Finanzas</a>
+        <a href="receivables.html" class="nav-item"><i class="ph ph-hand-coins"></i> CxC</a>
+        <a href="clients.html" class="nav-item"><i class="ph ph-users"></i> Clientes</a>
+        <a href="users.html" class="nav-item"><i class="ph ph-users-three"></i> Usuarios</a>
+        <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Ajustes</a>
+        <a href="logout.html" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
+    </div>
+    
+    <div class="main-content page-fade-in">
+        <div class="header stagger-1">
+            <h1>Registro HistÃ³rico de Documentos</h1>
+        </div>
+        
+        <div class="card stagger-2">
+            <h3>Facturas, Notas de Entrega y Presupuestos Emitidos</h3>
+            <div class="table-responsive" style="margin-top: 1rem;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>NÂ° Control</th>
+                            <th>Tipo</th>
+                            <th>Cliente</th>
+                            <th>Moneda</th>
+                            <th>Tasa BCV</th>
+                            <th>Total (USD)</th>
+                            <th>Total (VES)</th>
+                            <th>Estado</th>
+                            <th>Emision</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td><strong></strong></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>Bs.</td>
+                            <td>$</td>
+                            <td>Bs.</td>
+                            <td>
+                                <span class="badge ">
+                                    
+                                </span>
+                            </td>
+                            <td></td>
+                            <td style="display: flex; gap: 5px;">
+                                <a href="reprint_document.html?id=" target="_blank" class="btn-sm" style="background: var(--accent);"><i class="ph ph-printer"></i></a>
+                                
+                                <form action="document_actions.html" method="POST" style="display:inline;">
+                                    <input type="hidden" name="action" value="unprocess">
+                                    <input type="hidden" name="doc_id" value="">
+                                    <button type="submit" class="btn-sm warning" title="Desprocesar (Volver Pendiente)" onclick="return confirm('Â¿Seguro que deseas deshacer el pago y retirar el ingreso de finanzas?');"><i class="ph ph-arrow-u-down-left"></i></button>
+                                </form>
+                                
+                                <form action="document_actions.html" method="POST" style="display:inline;">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="doc_id" value="">
+                                    <button type="submit" class="btn-sm" style="background: var(--danger);" title="Eliminar Documento" onclick="return confirm('Â¿Seguro que deseas eliminar este documento completamente del sistema?');"><i class="ph ph-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        
+                        
+                            <tr><td colspan="9">No hay documentos registrados.</td></tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

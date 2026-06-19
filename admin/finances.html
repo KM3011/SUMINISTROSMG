@@ -1,0 +1,156 @@
+﻿
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanzas - Meygo ERP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="">
+    <div class="sidebar">
+        
+        <img src="" alt="Meygo Logo" class="sidebar-logo">
+        <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
+        <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
+        <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
+        <a href="finances.html" class="nav-item active"><i class="ph ph-chart-line-up"></i> Finanzas</a>
+        <a href="receivables.html" class="nav-item"><i class="ph ph-hand-coins"></i> CxC</a>
+        <a href="clients.html" class="nav-item"><i class="ph ph-users"></i> Clientes</a>
+        <a href="users.html" class="nav-item"><i class="ph ph-users-three"></i> Usuarios</a>
+        <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Ajustes</a>
+        <a href="logout.html" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
+    </div>
+    
+    <div class="main-content page-fade-in">
+        <div class="header stagger-1">
+            <h1>Control Financiero</h1>
+        </div>
+        
+        <div class="summary-grid stagger-2">
+            <div class="summary-card">
+                <div class="summary-icon icon-green"><i class="ph ph-trend-up"></i></div>
+                <div class="summary-info">
+                    <h3>Ingresos Totales</h3>
+                    <p>$ <br> <span style="font-size:0.9rem; color:var(--text-muted)">Bs. </span></p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon icon-orange"><i class="ph ph-trend-down"></i></div>
+                <div class="summary-info">
+                    <h3>Egresos Totales</h3>
+                    <p>$ <br> <span style="font-size:0.9rem; color:var(--text-muted)">Bs. </span></p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon icon-blue"><i class="ph ph-scales"></i></div>
+                <div class="summary-info">
+                    <h3>Balance (USD)</h3>
+                    <p>$</p>
+                </div>
+            </div>
+        </div>
+
+        
+            <div style="background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">Movimiento registrado exitosamente.</div>
+        
+
+        <div class="card stagger-3">
+            <h3>Registrar Movimiento</h3>
+            <form action="finances.html" method="POST" style="margin-top: 1.5rem;">
+                <input type="hidden" name="action" value="add_record">
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Tipo *</label>
+                            <select name="type" required>
+                                <option value="Ingreso">Ingreso</option>
+                                <option value="Egreso">Egreso (Gasto)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Monto *</label>
+                            <input type="number" step="0.01" name="amount" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Moneda *</label>
+                            <select name="currency" required>
+                                <option value="USD">USD ($)</option>
+                                <option value="VES">VES (Bs.)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col" style="flex: 0.5;">
+                        <div class="form-group">
+                            <label>MÃ©todo / Plataforma *</label>
+                            <select name="payment_method" required>
+                                <option value="Banco">Transferencia/Pago MÃ³vil</option>
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Binance">Binance / Crypto</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Descripcion / Concepto *</label>
+                            <input type="text" name="description" required placeholder="Ej: Pago de material elÃ©ctrico">
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-primary">Guardar Movimiento</button>
+            </form>
+        </div>
+
+        <div class="card stagger-3">
+            <h3>Historial de Movimientos</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Concepto</th>
+                            <th>MÃ©todo</th>
+                            <th>Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td></td>
+                            <td>
+                                <span class="badge ">
+                                    
+                                </span>
+                            </td>
+                            <td></td>
+                            <td><strong></strong></td>
+                            <td style="font-weight:700; color: ">
+                                
+                                
+                            </td>
+                        </tr>
+                        
+                        
+                            <tr><td colspan="5">No hay movimientos financieros.</td></tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,110 @@
+﻿
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios - Meygo Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .form-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+        .form-col { flex: 1; }
+    </style>
+</head>
+<body class="">
+    <div class="sidebar">
+        
+        <img src="" alt="Meygo Logo" class="sidebar-logo">
+        <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
+        <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
+        <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
+        <a href="finances.html" class="nav-item"><i class="ph ph-chart-line-up"></i> Finanzas</a>
+        <a href="receivables.html" class="nav-item"><i class="ph ph-hand-coins"></i> CxC</a>
+        <a href="clients.html" class="nav-item"><i class="ph ph-users"></i> Clientes</a>
+        <a href="users.html" class="nav-item active"><i class="ph ph-users-three"></i> Usuarios</a>
+        <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Ajustes</a>
+        <a href="logout.html" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
+    </div>
+    
+    <div class="main-content page-fade-in">
+        <div class="header stagger-1">
+            <h1>GestiÃ³n de Usuarios</h1>
+        </div>
+        
+        
+            <div style="background: #dcfce7; color: #166534; padding: 1rem; border-radius: 5px; margin-bottom: 2rem;"><i class="ph ph-check-circle"></i> Usuario registrado exitosamente.</div>
+        
+        
+            <div style="background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 5px; margin-bottom: 2rem;"><i class="ph ph-trash"></i> Usuario eliminado exitosamente.</div>
+        
+        
+            <div style="background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 5px; margin-bottom: 2rem;"><i class="ph ph-warning"></i> </div>
+        
+
+        <div class="card stagger-2">
+            <h3>AÃ±adir Nuevo Usuario Administrador</h3>
+            <form action="users.html" method="POST" style="margin-top: 1rem;">
+                <input type="hidden" name="action" value="add">
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Nombre de Usuario *</label>
+                            <input type="text" name="username" required autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>ContraseÃ±a *</label>
+                            <input type="password" name="password" required autocomplete="new-password">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn-sm success"><i class="ph ph-plus"></i> Registrar Usuario</button>
+            </form>
+        </div>
+
+        <div class="card stagger-3">
+            <h3>Listado de Usuarios</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Fecha de Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                            
+                            <tr>
+                                <td></td>
+                                <td><strong></strong></td>
+                                <td></td>
+                                <td>
+                                    
+                                    <form action="users.html" method="POST" style="display:inline;">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="user_id" value="">
+                                        <button type="submit" class="btn-sm" style="background: var(--danger);" title="Eliminar" onclick="return confirm('Â¿Seguro que deseas eliminar este usuario?');"><i class="ph ph-trash"></i></button>
+                                    </form>
+                                    
+                                        <span class="badge paid">TÃº</span>
+                                    
+                                </td>
+                            </tr>
+                            
+                        
+                            <tr><td colspan="4">No hay usuarios registrados.</td></tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

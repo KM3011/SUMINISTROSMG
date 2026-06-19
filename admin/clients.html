@@ -1,0 +1,196 @@
+﻿
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes - Meygo Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .form-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+        .form-col { flex: 1; }
+        
+        /* Modal Styles */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;}
+        .modal.active { display: flex; }
+        .modal-content { background-color: #fefefe; padding: 25px; border-radius: 8px; width: 90%; max-width: 600px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .close-modal { float: right; font-size: 24px; font-weight: bold; cursor: pointer; color: #666; }
+    </style>
+</head>
+<body class="">
+    <div class="sidebar">
+        
+        <img src="" alt="Meygo Logo" class="sidebar-logo">
+        <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
+        <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
+        <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
+        <a href="finances.html" class="nav-item"><i class="ph ph-chart-line-up"></i> Finanzas</a>
+        <a href="receivables.html" class="nav-item"><i class="ph ph-hand-coins"></i> CxC</a>
+        <a href="clients.html" class="nav-item active"><i class="ph ph-users"></i> Clientes</a>
+        <a href="users.html" class="nav-item"><i class="ph ph-users-three"></i> Usuarios</a>
+        <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Ajustes</a>
+        <a href="logout.html" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
+    </div>
+    
+    <div class="main-content page-fade-in">
+        <div class="header stagger-1">
+            <h1>Registro de Clientes</h1>
+        </div>
+        
+        
+            <div style="background: #dcfce7; color: #166534; padding: 1rem; border-radius: 5px; margin-bottom: 2rem;"><i class="ph ph-check-circle"></i> Cliente registrado exitosamente.</div>
+        
+        
+            <div style="background: #dcfce7; color: #166534; padding: 1rem; border-radius: 5px; margin-bottom: 2rem;"><i class="ph ph-check-circle"></i> Cliente actualizado exitosamente.</div>
+        
+        
+            <div style="background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 5px; margin-bottom: 2rem;"><i class="ph ph-trash"></i> Cliente eliminado exitosamente.</div>
+        
+        
+            <div style="background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 5px; margin-bottom: 2rem;"><i class="ph ph-warning"></i> </div>
+        
+
+        <div class="card stagger-2">
+            <h3>Anadir Nuevo Cliente</h3>
+            <form action="clients.html" method="POST" style="margin-top: 1rem;">
+                <input type="hidden" name="action" value="add">
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Nombre o Empresa *</label>
+                            <input type="text" name="name" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Cedula o RIF *</label>
+                            <input type="text" name="rif" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Correo ElectrÃ³nico</label>
+                            <input type="email" name="email">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Telefono</label>
+                            <input type="text" name="phone">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Direccion</label>
+                            <input type="text" name="address">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn-sm success"><i class="ph ph-plus"></i> Registrar Cliente</button>
+            </form>
+        </div>
+
+        <div class="card stagger-3">
+            <h3>Listado de Clientes</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>RIF</th>
+                            <th>Correo</th>
+                            <th>Telefono</th>
+                            <th>Direccion</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                            
+                            <tr>
+                                <td><strong></strong></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td style="display: flex; gap: 5px;">
+                                    <button class="btn-sm" style="background: var(--accent);" onclick="openEditModal()" title="Editar"><i class="ph ph-pencil"></i></button>
+                                    <form action="clients.html" method="POST" style="display:inline;">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="client_id" value="">
+                                        <button type="submit" class="btn-sm" style="background: var(--danger);" title="Eliminar" onclick="return confirm('Â¿Seguro que deseas eliminar este cliente?');"><i class="ph ph-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                            
+                        
+                            <tr><td colspan="6">No hay clientes registrados aÃºn.</td></tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="document.getElementById('editModal').classList.remove('active')">&times;</span>
+            <h3 style="margin-bottom: 20px; color: var(--primary);">Editar Cliente</h3>
+            <form action="clients.html" method="POST">
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="client_id" id="edit_id">
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Nombre o Empresa *</label>
+                            <input type="text" name="name" id="edit_name" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Cedula o RIF *</label>
+                            <input type="text" name="rif" id="edit_rif" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Correo ElectrÃ³nico</label>
+                    <input type="email" name="email" id="edit_email">
+                </div>
+                
+                <div class="form-group">
+                    <label>Telefono</label>
+                    <input type="text" name="phone" id="edit_phone">
+                </div>
+                
+                <div class="form-group">
+                    <label>Direccion</label>
+                    <input type="text" name="address" id="edit_address">
+                </div>
+                
+                <button type="submit" class="btn" style="width: 100%;"><i class="ph ph-floppy-disk"></i> Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditModal(client) {
+            document.getElementById('edit_id').value = client.id;
+            document.getElementById('edit_name').value = client.name;
+            document.getElementById('edit_rif').value = client.rif;
+            document.getElementById('edit_email').value = client.email;
+            document.getElementById('edit_phone').value = client.phone;
+            document.getElementById('edit_address').value = client.address;
+            document.getElementById('editModal').classList.add('active');
+        }
+    </script>
+</body>
+</html>
+
