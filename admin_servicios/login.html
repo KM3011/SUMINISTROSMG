@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Acceso - Meygo ERP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        body.login-body {
+            background: linear-gradient(135deg, var(--secondary) 0%, #d5e4f7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .login-container {
+            background: var(--primary);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(30, 75, 130, 0.1);
+            text-align: center;
+        }
+        .login-logo {
+            width: 150px;
+            margin-bottom: 25px;
+        }
+        .login-container h2 {
+            color: var(--accent);
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            font-weight: 800;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--highlight);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(58, 108, 179, 0.1);
+        }
+        .btn-admin {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        .btn-admin:hover {
+            background: var(--highlight);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(30, 75, 130, 0.2);
+        }
+        .error-msg {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: none;
+        }
+    </style>
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <img src="../assets/images/logo.png" alt="Meygo Logo" class="login-logo" id="loginLogo">
+        <h2>Bienvenido</h2>
+
+        <div class="error-msg" id="errorMsg"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Usuario</label>
+                <input type="text" id="username" required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="btn-admin" id="submitBtn">Acceso</button>
+        </form>
+    </div>
+
+    <!-- Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const empresa = params.get('empresa');
+
+            // Check session
+            if (localStorage.getItem('admin_logged_in') === 'true') {
+                window.location.href = 'index.html';
+            }
+
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const usernameInput = document.getElementById('username').value;
+                const passwordInput = document.getElementById('password').value;
+                const errorMsg = document.getElementById('errorMsg');
+                const submitBtn = document.getElementById('submitBtn');
+
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Cargando...';
+
+                // Buscar usuario en la tabla admin_users
+                const { data, error } = await supabaseClient
+                    .from('admin_users')
+                    .select('*')
+                    .eq('username', usernameInput)
+                    .eq('password', passwordInput)
+                    .single();
+
+                if (error || !data) {
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerText = 'Usuario o contraseña incorrectos.';
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Acceso';
+                } else {
+                    // Simular inicio de sesión exitoso guardándolo en el navegador
+                    localStorage.setItem('admin_logged_in', 'true');
+                    localStorage.setItem('admin_username', data.username);
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

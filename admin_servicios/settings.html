@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuracion de la Empresa - Meygo ERP</title>
+    <link rel="icon" type="image/png" href="../assets/images/icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        #notificationArea { margin-bottom: 2rem; }
+        .alert { padding: 1rem; border-radius: 5px; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .alert-success { background: #dcfce7; color: #166534; }
+        .alert-error { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body class="theme-servicios">
+    <div class="sidebar">
+        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
+        <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
+        <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
+        <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
+        <a href="finances.html" class="nav-item"><i class="ph ph-chart-line-up"></i> Finanzas</a>
+        <a href="receivables.html" class="nav-item"><i class="ph ph-hand-coins"></i> CxC</a>
+        <a href="clients.html" class="nav-item"><i class="ph ph-users"></i> Clientes</a>
+        <a href="users.html" class="nav-item"><i class="ph ph-users-three"></i> Usuarios</a>
+        <a href="settings.html" class="nav-item active"><i class="ph ph-gear"></i> Ajustes</a>
+        <a href="#" id="logoutBtn" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header stagger-1">
+            <div>
+                <h1>Configuracion de la Empresa</h1>
+                <p>Personaliza los datos y correlativos de facturacion.</p>
+            </div>
+        </div>
+
+        <div id="notificationArea" class="stagger-1"></div>
+
+        <form id="settingsForm">
+            <div class="settings-grid">
+                <!-- Informacion Corporativa -->
+                <div class="settings-card stagger-1">
+                    <div class="settings-card-header">
+                        <i class="ph ph-buildings"></i> Informacion Corporativa
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre de la Empresa</label>
+                        <input type="text" id="company_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>RIF Corporativo</label>
+                        <input type="text" id="company_rif" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Direccion Fiscal</label>
+                        <input type="text" id="company_address" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Informacion de Contacto (Telefonos / Correos)</label>
+                        <input type="text" id="company_phone" required>
+                    </div>
+                </div>
+
+                <!-- Detalles Tecnicos -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <!-- Correlativos -->
+                    <div class="settings-card stagger-2">
+                        <div class="settings-card-header">
+                            <i class="ph ph-list-numbers"></i> Correlativos de Documentos
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Especifica el proximo numero de control para cada tipo de documento.</p>
+                        <div class="form-row" style="margin-bottom: 0; display: flex; gap: 1rem;">
+                            <div class="form-col" style="flex: 1;">
+                                <div class="form-group">
+                                    <label>Proxima Factura</label>
+                                    <input type="number" id="next_factura" min="1" required>
+                                </div>
+                            </div>
+                            <div class="form-col" style="flex: 1;">
+                                <div class="form-group">
+                                    <label>Proximo Presupuesto</label>
+                                    <input type="number" id="next_presupuesto" min="1" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Proxima Nota de Entrega</label>
+                            <input type="number" id="next_nota" min="1" required>
+                        </div>
+                    </div>
+
+                    <!-- Informacion de Pago -->
+                    <div class="settings-card stagger-3">
+                        <div class="settings-card-header">
+                            <i class="ph ph-bank"></i> Informacion de Pago en PDF
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Este texto se estampara al final de todos los PDFs generados. Puedes usar saltos de linea.</p>
+                        <div class="form-group">
+                            <textarea id="payment_info" rows="4" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; resize: vertical;" required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right; margin-top: 1rem;" class="stagger-3">
+                <button type="submit" id="saveBtn" class="btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem;"><i class="ph ph-floppy-disk"></i> Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
+
+    <script>
+        if (localStorage.getItem('admin_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_username');
+            window.location.href = 'login.html';
+        });
+
+        function showNotification(msg, type = 'success') {
+            const area = document.getElementById('notificationArea');
+            const icon = type === 'success' ? 'ph-check-circle' : 'ph-warning';
+            area.innerHTML = `<div class="alert alert-${type}"><i class="ph ${icon}"></i> ${msg}</div>`;
+            setTimeout(() => { area.innerHTML = ''; }, 4000);
+        }
+
+        let settingsId = null;
+
+        async function fetchSettings() {
+            try {
+                const { data, error } = await supabaseClient.from('settings').select('*').limit(1);
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    const settings = data[0];
+                    settingsId = settings.id;
+                    document.getElementById('company_name').value = settings.company_name || '';
+                    document.getElementById('company_rif').value = settings.rif || '';
+                    document.getElementById('company_address').value = settings.address || '';
+                    document.getElementById('company_phone').value = settings.phone || '';
+                    document.getElementById('next_factura').value = settings.next_factura || 1;
+                    document.getElementById('next_presupuesto').value = settings.next_presupuesto || 1;
+                    document.getElementById('next_nota').value = settings.next_nota || 1;
+                    document.getElementById('payment_info').value = settings.payment_info || '';
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true; btn.innerHTML = 'Guardando...';
+
+            const payload = {
+                company_name: document.getElementById('company_name').value,
+                rif: document.getElementById('company_rif').value,
+                address: document.getElementById('company_address').value,
+                phone: document.getElementById('company_phone').value,
+                next_factura: parseInt(document.getElementById('next_factura').value),
+                next_presupuesto: parseInt(document.getElementById('next_presupuesto').value),
+                next_nota: parseInt(document.getElementById('next_nota').value),
+                payment_info: document.getElementById('payment_info').value
+            };
+
+            try {
+                if (settingsId) {
+                    const { error } = await supabaseClient.from('settings').update(payload).eq('id', settingsId);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabaseClient.from('settings').insert([payload]);
+                    if (error) throw error;
+                    // fetch id
+                    await fetchSettings();
+                }
+                showNotification('Configuracion actualizada exitosamente.');
+            } catch (err) {
+                showNotification(err.message, 'error');
+            } finally {
+                btn.disabled = false; btn.innerHTML = '<i class="ph ph-floppy-disk"></i> Guardar Cambios';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', fetchSettings);
+    </script>
+</body>
+</html>

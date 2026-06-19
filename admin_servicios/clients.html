@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes - Meygo Admin</title>
+    <link rel="icon" type="image/png" href="../assets/images/icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .form-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+        .form-col { flex: 1; }
+        
+        /* Modal Styles */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;}
+        .modal.active { display: flex; }
+        .modal-content { background-color: #fefefe; padding: 25px; border-radius: 8px; width: 90%; max-width: 600px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .close-modal { float: right; font-size: 24px; font-weight: bold; cursor: pointer; color: #666; }
+        
+        /* Dynamic Notifications */
+        #notificationArea { margin-bottom: 2rem; }
+        .alert { padding: 1rem; border-radius: 5px; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .alert-success { background: #dcfce7; color: #166534; }
+        .alert-error { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body class="theme-servicios">
+    <div class="sidebar">
+        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
+        <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
+        <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
+        <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
+        <a href="finances.html" class="nav-item"><i class="ph ph-chart-line-up"></i> Finanzas</a>
+        <a href="receivables.html" class="nav-item"><i class="ph ph-hand-coins"></i> CxC</a>
+        <a href="clients.html" class="nav-item active"><i class="ph ph-users"></i> Clientes</a>
+        <a href="users.html" class="nav-item"><i class="ph ph-users-three"></i> Usuarios</a>
+        <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Ajustes</a>
+        <a href="#" id="logoutBtn" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
+    </div>
+    
+    <div class="main-content page-fade-in">
+        <div class="header stagger-1">
+            <h1>Registro de Clientes</h1>
+        </div>
+        
+        <!-- Contenedor dinámico de notificaciones -->
+        <div id="notificationArea" class="stagger-1"></div>
+
+        <div class="card stagger-2">
+            <h3>Anadir Nuevo Cliente</h3>
+            <form id="addClientForm" style="margin-top: 1rem;">
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Nombre o Empresa *</label>
+                            <input type="text" id="add_name" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Cedula o RIF *</label>
+                            <input type="text" id="add_rif" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Correo Electronico</label>
+                            <input type="email" id="add_email">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Telefono</label>
+                            <input type="text" id="add_phone">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Direccion</label>
+                            <input type="text" id="add_address">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" id="addSubmitBtn" class="btn-sm success"><i class="ph ph-plus"></i> Registrar Cliente</button>
+            </form>
+        </div>
+
+        <div class="card stagger-3">
+            <h3>Listado de Clientes</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>RIF</th>
+                            <th>Correo</th>
+                            <th>Telefono</th>
+                            <th>Direccion</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientsTableBody">
+                        <tr><td colspan="6">Cargando clientes...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="document.getElementById('editModal').classList.remove('active')">&times;</span>
+            <h3 style="margin-bottom: 20px; color: var(--primary);">Editar Cliente</h3>
+            <form id="editClientForm">
+                <input type="hidden" id="edit_id">
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Nombre o Empresa *</label>
+                            <input type="text" id="edit_name" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Cedula o RIF *</label>
+                            <input type="text" id="edit_rif" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Correo Electronico</label>
+                    <input type="email" id="edit_email">
+                </div>
+                
+                <div class="form-group">
+                    <label>Telefono</label>
+                    <input type="text" id="edit_phone">
+                </div>
+                
+                <div class="form-group">
+                    <label>Direccion</label>
+                    <input type="text" id="edit_address">
+                </div>
+                
+                <button type="submit" id="editSubmitBtn" class="btn" style="width: 100%;"><i class="ph ph-floppy-disk"></i> Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
+
+    <script>
+        // Check session & Logout
+        if (localStorage.getItem('admin_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_username');
+            window.location.href = 'login.html';
+        });
+
+        // Utils
+        function showNotification(msg, type = 'success') {
+            const area = document.getElementById('notificationArea');
+            const icon = type === 'success' ? 'ph-check-circle' : 'ph-warning';
+            area.innerHTML = `<div class="alert alert-${type}"><i class="ph ${icon}"></i> ${msg}</div>`;
+            setTimeout(() => { area.innerHTML = ''; }, 4000);
+        }
+
+        // 1. Fetch Clients
+        async function fetchClients() {
+            const tbody = document.getElementById('clientsTableBody');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('clients')
+                    .select('*')
+                    .order('name', { ascending: true });
+                
+                if (error) throw error;
+
+                tbody.innerHTML = '';
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6">No hay clientes registrados aun.</td></tr>';
+                    return;
+                }
+
+                data.forEach(client => {
+                    const tr = document.createElement('tr');
+                    
+                    // Escapar comillas para el onclick
+                    const clientJson = JSON.stringify(client).replace(/"/g, '&quot;');
+                    
+                    tr.innerHTML = `
+                        <td><strong>${client.name}</strong></td>
+                        <td>${client.rif}</td>
+                        <td>${client.email || ''}</td>
+                        <td>${client.phone || ''}</td>
+                        <td>${client.address || ''}</td>
+                        <td style="display: flex; gap: 5px;">
+                            <button class="btn-sm" style="background: var(--accent);" onclick="openEditModal(${clientJson})" title="Editar"><i class="ph ph-pencil"></i></button>
+                            <button class="btn-sm" style="background: var(--danger);" onclick="deleteClient(${client.id}, '${client.name}')" title="Eliminar"><i class="ph ph-trash"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="6">Error cargando clientes: ${err.message}</td></tr>`;
+            }
+        }
+
+        // 2. Add Client
+        document.getElementById('addClientForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('addSubmitBtn');
+            btn.disabled = true; btn.innerHTML = 'Guardando...';
+
+            const newClient = {
+                name: document.getElementById('add_name').value,
+                rif: document.getElementById('add_rif').value,
+                email: document.getElementById('add_email').value,
+                phone: document.getElementById('add_phone').value,
+                address: document.getElementById('add_address').value,
+                created_by: localStorage.getItem('admin_username') || 'admin'
+            };
+
+            try {
+                const { error } = await supabaseClient.from('clients').insert([newClient]);
+                if (error) throw error;
+                
+                showNotification('Cliente registrado exitosamente.');
+                document.getElementById('addClientForm').reset();
+                fetchClients();
+            } catch (err) {
+                showNotification(err.message, 'error');
+            } finally {
+                btn.disabled = false; btn.innerHTML = '<i class="ph ph-plus"></i> Registrar Cliente';
+            }
+        });
+
+        // 3. Edit Client
+        function openEditModal(client) {
+            document.getElementById('edit_id').value = client.id;
+            document.getElementById('edit_name').value = client.name;
+            document.getElementById('edit_rif').value = client.rif;
+            document.getElementById('edit_email').value = client.email || '';
+            document.getElementById('edit_phone').value = client.phone || '';
+            document.getElementById('edit_address').value = client.address || '';
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        document.getElementById('editClientForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('editSubmitBtn');
+            btn.disabled = true; btn.innerHTML = 'Guardando...';
+
+            const id = document.getElementById('edit_id').value;
+            const updates = {
+                name: document.getElementById('edit_name').value,
+                rif: document.getElementById('edit_rif').value,
+                email: document.getElementById('edit_email').value,
+                phone: document.getElementById('edit_phone').value,
+                address: document.getElementById('edit_address').value
+            };
+
+            try {
+                const { error } = await supabaseClient.from('clients').update(updates).eq('id', id);
+                if (error) throw error;
+                
+                showNotification('Cliente actualizado exitosamente.');
+                document.getElementById('editModal').classList.remove('active');
+                fetchClients();
+            } catch (err) {
+                showNotification(err.message, 'error');
+            } finally {
+                btn.disabled = false; btn.innerHTML = '<i class="ph ph-floppy-disk"></i> Guardar Cambios';
+            }
+        });
+
+        // 4. Delete Client
+        async function deleteClient(id, name) {
+            if (!confirm(`Seguro que deseas eliminar al cliente ${name}?`)) return;
+            
+            try {
+                const { error } = await supabaseClient.from('clients').delete().eq('id', id);
+                if (error) throw error;
+                
+                showNotification('Cliente eliminado exitosamente.');
+                fetchClients();
+            } catch (err) {
+                showNotification(err.message, 'error');
+            }
+        }
+
+        // Initial Load
+        document.addEventListener('DOMContentLoaded', fetchClients);
+    </script>
+</body>
+</html>

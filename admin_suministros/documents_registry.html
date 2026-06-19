@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Documentos - Meygo ERP</title>
+    <link rel="icon" type="image/png" href="../assets/images/icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        #notificationArea { margin-bottom: 2rem; }
+        .alert { padding: 1rem; border-radius: 5px; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .alert-success { background: #dcfce7; color: #166534; }
+        .alert-error { background: #fee2e2; color: #991b1b; }
+        
+        .badge { padding: 0.3rem 0.6rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+        .badge-pagado { background: #dcfce7; color: #16a34a; }
+        .badge-pendiente { background: #ffedd5; color: #ea580c; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
+        <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
+        <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
+        <a href="documents_registry.html" class="nav-item active"><i class="ph ph-folders"></i> Documentos</a>
+        <a href="finances.html" class="nav-item"><i class="ph ph-chart-line-up"></i> Finanzas</a>
+        <a href="receivables.html" class="nav-item"><i class="ph ph-hand-coins"></i> CxC</a>
+        <a href="clients.html" class="nav-item"><i class="ph ph-users"></i> Clientes</a>
+        <a href="users.html" class="nav-item"><i class="ph ph-users-three"></i> Usuarios</a>
+        <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Ajustes</a>
+        <a href="#" id="logoutBtn" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
+    </div>
+
+    <div class="main-content page-fade-in">
+        <div class="header stagger-1">
+            <h1>Registro Historico de Documentos</h1>
+        </div>
+        
+        <div id="notificationArea" class="stagger-1"></div>
+
+        <div class="card stagger-2">
+            <h3>Facturas, Notas de Entrega y Presupuestos Emitidos</h3>
+            <div class="table-responsive" style="margin-top: 1rem;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N Control</th>
+                            <th>Tipo</th>
+                            <th>Cliente</th>
+                            <th>Total (USD)</th>
+                            <th>Estado</th>
+                            <th>Emision</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="documentsTableBody">
+                        <tr><td colspan="7">Cargando documentos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        if (localStorage.getItem('admin_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_username');
+            window.location.href = 'login.html';
+        });
+
+        function showNotification(msg, type = 'success') {
+            const area = document.getElementById('notificationArea');
+            const icon = type === 'success' ? 'ph-check-circle' : 'ph-warning';
+            area.innerHTML = `<div class="alert alert-${type}"><i class="ph ${icon}"></i> ${msg}</div>`;
+            setTimeout(() => { area.innerHTML = ''; }, 4000);
+        }
+
+        async function fetchDocuments() {
+            const tbody = document.getElementById('documentsTableBody');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('documents')
+                    .select('*, clients(name)')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+
+                tbody.innerHTML = '';
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7">No hay documentos registrados.</td></tr>';
+                    return;
+                }
+
+                data.forEach(doc => {
+                    const tr = document.createElement('tr');
+                    const clientName = doc.clients ? doc.clients.name : 'Cliente Eliminado';
+                    const badgeClass = doc.status === 'Pagado' ? 'badge-pagado' : 'badge-pendiente';
+                    
+                    tr.innerHTML = `
+                        <td><strong>${doc.control_number}</strong></td>
+                        <td>${doc.type}</td>
+                        <td>${clientName}</td>
+                        <td>$${parseFloat(doc.total).toFixed(2)}</td>
+                        <td><span class="badge ${badgeClass}">${doc.status}</span></td>
+                        <td>${doc.date}</td>
+                        <td style="display: flex; gap: 8px;">
+                            <button onclick="downloadDocument(${doc.id})" class="btn-sm" style="background: #1e4b82; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px;" title="Descargar o Reimprimir PDF" id="btn-download-${doc.id}">
+                                <i class="ph ph-download-simple" style="font-size: 1.2rem;"></i> Descargar
+                            </button>
+                            <button onclick="deleteDocument(${doc.id}, '${doc.control_number}')" class="btn-sm" style="background: #dc2626; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Eliminar Documento">
+                                <i class="ph ph-trash" style="font-size: 1.2rem;"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7">Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        async function deleteDocument(id, controlNum) {
+            if (!confirm(`Seguro que deseas eliminar el documento ${controlNum}? Se eliminara permanentemente.`)) return;
+            try {
+                const { error } = await supabaseClient.from('documents').delete().eq('id', id);
+                if (error) throw error;
+                
+                showNotification(`Documento ${controlNum} eliminado exitosamente.`);
+                fetchDocuments();
+            } catch (err) {
+                showNotification(err.message, 'error');
+            }
+        }
+
+        async function downloadDocument(docId) {
+            const btn = document.getElementById(`btn-download-${docId}`);
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i>';
+
+            try {
+                // 1. Fetch Document and Client
+                const { data: docData, error: docErr } = await supabaseClient
+                    .from('documents')
+                    .select('*, clients(*)')
+                    .eq('id', docId)
+                    .single();
+                if (docErr) throw docErr;
+
+                // 2. Fetch Items
+                const { data: itemsData, error: itemsErr } = await supabaseClient
+                    .from('document_items')
+                    .select('*')
+                    .eq('document_id', docId);
+                if (itemsErr) throw itemsErr;
+
+                // 3. Fetch Settings
+                const { data: settingsResult } = await supabaseClient.from('settings').select('*').limit(1);
+                const settingsData = settingsResult && settingsResult.length > 0 ? settingsResult[0] : null;
+
+                // 4. Fetch Rate
+                let currentRate = 1;
+                try {
+                    const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
+                    const data = await res.json();
+                    currentRate = data.promedio;
+                } catch(e) { console.error(e); }
+
+                // 5. Generate PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.setTextColor(30, 75, 130);
+                doc.text(settingsData ? (settingsData.company_name || 'MEYGO ERP') : 'MEYGO ERP', 14, 22);
+                
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                if(settingsData) {
+                    doc.text(`RIF: ${settingsData.rif || ''}`, 14, 30);
+                    doc.text(`Direccion: ${settingsData.address || ''}`, 14, 35);
+                    doc.text(`Telefono: ${settingsData.phone || ''}`, 14, 40);
+                }
+
+                // Doc Info
+                doc.setFontSize(16);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`${docData.type.toUpperCase()}`, 150, 22);
+                doc.setFontSize(10);
+                doc.text(`N Control: ${docData.control_number}`, 150, 30);
+                
+                // Date formatting
+                const docDate = new Date(docData.date);
+                docDate.setMinutes(docDate.getMinutes() + docDate.getTimezoneOffset());
+                doc.text(`Fecha: ${docDate.toLocaleDateString()}`, 150, 35);
+
+                // Client Info
+                doc.setFillColor(240, 245, 250);
+                doc.rect(14, 45, 182, 35, 'F');
+                doc.setFontSize(11);
+                doc.setTextColor(30, 75, 130);
+                doc.text('DATOS DEL CLIENTE', 18, 52);
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Nombre: ${docData.clients ? docData.clients.name : 'N/A'}`, 18, 60);
+                doc.text(`RIF/Cedula: ${docData.clients ? docData.clients.rif : 'N/A'}`, 18, 65);
+                doc.text(`Direccion: ${docData.clients && docData.clients.address ? docData.clients.address.substring(0, 80) : 'N/A'}`, 18, 70);
+
+                // Items Table
+                const tableBody = itemsData.map(item => [
+                    item.description,
+                    item.quantity,
+                    '$' + parseFloat(item.price).toFixed(2),
+                    '$' + parseFloat(item.total).toFixed(2)
+                ]);
+
+                doc.autoTable({
+                    startY: 85,
+                    head: [['Descripcion', 'Cant.', 'Precio Unit.', 'Total']],
+                    body: tableBody,
+                    theme: 'striped',
+                    headStyles: { fillColor: [30, 75, 130] },
+                    styles: { fontSize: 9 }
+                });
+
+                // Totals
+                const finalY = doc.lastAutoTable.finalY + 10;
+                doc.setFontSize(10);
+                doc.text(`Subtotal: $${parseFloat(docData.subtotal).toFixed(2)}`, 140, finalY);
+                doc.text(`IVA: $${parseFloat(docData.tax).toFixed(2)}`, 140, finalY + 6);
+                doc.setFontSize(12);
+                doc.setTextColor(30, 75, 130);
+                doc.text(`TOTAL USD: $${parseFloat(docData.total).toFixed(2)}`, 140, finalY + 14);
+                
+                const totalVES = docData.total * currentRate;
+                doc.setTextColor(76, 175, 80);
+                doc.text(`TOTAL VES: Bs. ${totalVES.toFixed(2)}`, 140, finalY + 20);
+
+                // Payment Info
+                if (settingsData && settingsData.payment_info) {
+                    doc.setFontSize(9);
+                    doc.setTextColor(100, 100, 100);
+                    const splitText = doc.splitTextToSize(settingsData.payment_info, 180);
+                    doc.text(splitText, 14, finalY + 35);
+                }
+
+                doc.save(`${docData.type}_${docData.control_number}.pdf`);
+                showNotification(`Documento ${docData.control_number} descargado.`);
+
+            } catch (err) {
+                showNotification(err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph ph-download-simple"></i>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchDocuments);
+    </script>
+</body>
+</html>

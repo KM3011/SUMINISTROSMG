@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios - Meygo Admin</title>
+    <link rel="icon" type="image/png" href="../assets/images/icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .form-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+        .form-col { flex: 1; }
+        #notificationArea { margin-bottom: 2rem; }
+        .alert { padding: 1rem; border-radius: 5px; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .alert-success { background: #dcfce7; color: #166534; }
+        .alert-error { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body class="theme-servicios">
+    <div class="sidebar">
+        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
+        <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
+        <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
+        <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
+        <a href="finances.html" class="nav-item"><i class="ph ph-chart-line-up"></i> Finanzas</a>
+        <a href="receivables.html" class="nav-item"><i class="ph ph-hand-coins"></i> CxC</a>
+        <a href="clients.html" class="nav-item"><i class="ph ph-users"></i> Clientes</a>
+        <a href="users.html" class="nav-item active"><i class="ph ph-users-three"></i> Usuarios</a>
+        <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Ajustes</a>
+        <a href="#" id="logoutBtn" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
+    </div>
+
+    <div class="main-content page-fade-in">
+        <div class="header stagger-1">
+            <h1>Gestion de Usuarios</h1>
+        </div>
+
+        <div id="notificationArea" class="stagger-1"></div>
+
+        <div class="card stagger-2">
+            <h3>Anadir Nuevo Usuario Administrador</h3>
+            <form id="addUserForm" style="margin-top: 1rem;">
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Nombre de Usuario *</label>
+                            <input type="text" id="add_username" required autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label>Contrasena *</label>
+                            <input type="password" id="add_password" required autocomplete="new-password">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" id="addSubmitBtn" class="btn-sm success"><i class="ph ph-plus"></i> Registrar Usuario</button>
+            </form>
+        </div>
+
+        <div class="card stagger-3">
+            <h3>Listado de Usuarios</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Fecha de Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr><td colspan="4">Cargando usuarios...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
+
+    <script>
+        if (localStorage.getItem('admin_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_username');
+            window.location.href = 'login.html';
+        });
+
+        const currentUser = localStorage.getItem('admin_username');
+
+        function showNotification(msg, type = 'success') {
+            const area = document.getElementById('notificationArea');
+            const icon = type === 'success' ? 'ph-check-circle' : 'ph-warning';
+            area.innerHTML = `<div class="alert alert-${type}"><i class="ph ${icon}"></i> ${msg}</div>`;
+            setTimeout(() => { area.innerHTML = ''; }, 4000);
+        }
+
+        async function fetchUsers() {
+            const tbody = document.getElementById('usersTableBody');
+            try {
+                const { data, error } = await supabaseClient.from('admin_users').select('*').order('id', { ascending: true });
+                if (error) throw error;
+
+                tbody.innerHTML = '';
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4">No hay usuarios registrados.</td></tr>';
+                    return;
+                }
+
+                data.forEach(user => {
+                    const tr = document.createElement('tr');
+                    const isMe = user.username === currentUser;
+                    const dateObj = new Date(user.created_at);
+                    const formattedDate = !isNaN(dateObj) ? dateObj.toLocaleDateString() : 'N/A';
+
+                    let actionsHtml = '';
+                    if (isMe) {
+                        actionsHtml = '<span class="badge" style="background: var(--primary); color: white;">Tu</span>';
+                    } else {
+                        actionsHtml = `<button class="btn-sm" style="background: var(--danger);" onclick="deleteUser(${user.id}, '${user.username}')" title="Eliminar"><i class="ph ph-trash"></i></button>`;
+                    }
+
+                    tr.innerHTML = `
+                        <td>${user.id}</td>
+                        <td><strong>${user.username}</strong></td>
+                        <td>${formattedDate}</td>
+                        <td>${actionsHtml}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="4">Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('addSubmitBtn');
+            btn.disabled = true; btn.innerHTML = 'Guardando...';
+
+            const newUsername = document.getElementById('add_username').value;
+            const newPassword = document.getElementById('add_password').value;
+
+            try {
+                const { error } = await supabaseClient.from('admin_users').insert([{ username: newUsername, password: newPassword }]);
+                if (error) throw error;
+                
+                showNotification('Usuario registrado exitosamente.');
+                document.getElementById('addUserForm').reset();
+                fetchUsers();
+            } catch (err) {
+                showNotification(err.message, 'error');
+            } finally {
+                btn.disabled = false; btn.innerHTML = '<i class="ph ph-plus"></i> Registrar Usuario';
+            }
+        });
+
+        async function deleteUser(id, username) {
+            if (!confirm(`Seguro que deseas eliminar al usuario ${username}?`)) return;
+            try {
+                const { error } = await supabaseClient.from('admin_users').delete().eq('id', id);
+                if (error) throw error;
+                
+                showNotification('Usuario eliminado exitosamente.');
+                fetchUsers();
+            } catch (err) {
+                showNotification(err.message, 'error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchUsers);
+    </script>
+</body>
+</html>

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emitir Documento - Meygo ERP</title>
+    <link rel="icon" type="image/png" href="../assets/images/icon.png">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --color-primary: #1e4b82;
+            --color-primary-light: #3a6cb3;
+            --color-secondary: #e8f1ff;
+            --color-accent: #0f2e57;
+            --color-text: #333333;
+            --color-border: #a0bce0;
+            --color-light-bg: #f5f9ff;
+            --color-success: #4caf50;
+            --color-danger: #e53935;
+            --shadow: 0 5px 15px rgba(30, 75, 130, 0.1);
+            --transition: all 0.3s ease;
+            --border-radius: 12px;
+        }
+
+        .new-container { width: 100%; background-color: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); padding: 25px; }
+
+        .header-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--color-border); background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%); border-radius: 8px; padding: 20px; color: white; }
+
+        .document-info { display:flex; justify-content: space-between; align-items: center; width: 100%; }
+        .document-title { font-size: 24px; font-weight: bold; }
+        .document-number { font-size: 18px; display: flex; align-items: center; gap: 10px; }
+
+        .payment-methods, .document-type-selector { display: flex; gap: 8px; margin-bottom: 25px; justify-content: center; flex-wrap: wrap; }
+        .payment-method, .doc-type-btn { padding: 12px 20px; border-radius: 6px; text-align: center; cursor: pointer; transition: var(--transition); font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 8px; flex: 1; justify-content: center; border: 2px solid var(--color-border); background-color: var(--color-light-bg); color: var(--color-text);}
+        .payment-method.active, .doc-type-btn.active { border-color: var(--color-primary); background-color: var(--color-primary); color: white; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+        .info-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        .c-card { background-color: white; border-radius: 8px; padding: 20px; box-shadow: var(--shadow); border-top: 4px solid var(--color-primary); }
+        .c-card h2 { color: var(--color-primary); margin-bottom: 15px; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
+
+        .c-form-group { margin-bottom: 15px; }
+        .c-form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--color-accent); font-size: 14px; }
+        .c-form-group input, .c-form-group select, .c-form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid var(--color-border); border-radius: 6px; font-size: 14px; background-color: white; }
+        .c-form-group input:focus, .c-form-group select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(0,0,0, 0.05); }
+
+        .products-section { background-color: white; border-radius: 8px; padding: 20px; box-shadow: var(--shadow); border-top: 4px solid var(--color-success); margin-bottom: 25px; }
+        .product-form { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; gap: 15px; margin-bottom: 20px; padding: 15px; background-color: var(--color-light-bg); border-radius: 8px; align-items: end;}
+
+        .products-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .products-table th { background-color: var(--color-primary); color: white; padding: 12px 15px; text-align: left; }
+        .products-table td { padding: 12px 15px; border-bottom: 1px solid var(--color-border); }
+        .products-table tr:nth-child(even) { background-color: var(--color-secondary); }
+
+        .c-btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; color: white; justify-content: center;}
+        .c-btn-primary { background-color: var(--color-primary); }
+        .c-btn-success { background-color: var(--color-success); }
+        .c-btn-danger { background-color: var(--color-danger); }
+
+        .summary { margin-top: 25px; padding: 20px; background-color: var(--color-secondary); border-radius: 8px; border-left: 4px solid var(--color-primary); font-size: 16px;}
+        .summary-item { display: flex; justify-content: space-between; margin-bottom: 12px; padding: 10px 0; border-bottom: 1px dashed var(--color-border); }
+        .total { font-weight: bold; font-size: 20px; color: var(--color-primary); margin-top: 12px; padding-top: 12px; border-top: 2px solid var(--color-primary); display: flex; justify-content: space-between;}
+
+        /* Modal Styles */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;}
+        .modal.active { display: flex; }
+        .modal-content { background-color: #fefefe; padding: 20px; border-radius: 8px; width: 80%; max-width: 600px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .close-modal { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-modal:hover { color: black; }
+        .client-list { max-height: 300px; overflow-y: auto; margin-top: 15px; border: 1px solid var(--color-border); border-radius: 6px;}
+        .client-item { padding: 15px; border-bottom: 1px solid var(--color-border); cursor: pointer; transition: background 0.2s; }
+        .client-item:hover { background-color: var(--color-secondary); }
+        .client-item strong { display: block; color: var(--color-primary); font-size: 16px;}
+
+        /* Step Wizard Layout */
+        .step { display: block; }
+        .mobile-nav-buttons { display: none; }
+        .step-indicator { display: none; text-align: center; margin-bottom: 20px; font-weight: bold; color: var(--color-primary); }
+
+        #notificationArea { margin-bottom: 1rem; }
+        .alert { padding: 1rem; border-radius: 5px; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .alert-success { background: #dcfce7; color: #166534; }
+        .alert-error { background: #fee2e2; color: #991b1b; }
+
+        @media (max-width: 768px) {
+            .step { display: none; }
+            .step.active { display: block; animation: fadeIn 0.4s; }
+            @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
+            .mobile-nav-buttons { display: flex; justify-content: space-between; gap: 10px; margin-top: 20px; }
+            .step-indicator { display: block; }
+            .document-info { flex-direction: column; gap: 15px; text-align: center; }
+            .document-number { justify-content: center; width: 100%; }
+            .payment-methods { flex-direction: column; gap: 10px; }
+            .document-type-selector { flex-direction: column; gap: 10px; }
+            .info-section { grid-template-columns: 1fr; }
+            .product-form { grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px; }
+            .product-form .c-form-group:nth-child(1), .product-form .c-form-group:nth-child(5), .product-form .c-form-group:nth-child(6) { grid-column: 1 / -1; }
+            .products-table thead { display: none; }
+            .products-table, .products-table tbody, .products-table tr, .products-table td { display: block; width: 100%; }
+            .products-table tr { margin-bottom: 15px; background: var(--color-light-bg) !important; border: 1px solid var(--color-border); border-radius: 8px; padding: 10px; }
+            .products-table td { padding: 10px 5px; border-bottom: 1px dashed var(--color-border); display: flex; justify-content: space-between; align-items: center; text-align: right; }
+            .products-table td:last-child { border-bottom: none; justify-content: center; padding-top: 15px;}
+            .products-table td::before { content: attr(data-label); font-weight: 600; color: var(--color-accent); float: left; text-align: left; margin-right: 15px; }
+            .total { flex-direction: column; align-items: center; gap: 5px; text-align: center; }
+        }
+    </style>
+</head>
+<body class="theme-servicios">
+    <div class="sidebar">
+        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
+        <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
+        <a href="create_document.html" class="nav-item active"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
+        <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
+        <a href="finances.html" class="nav-item"><i class="ph ph-chart-line-up"></i> Finanzas</a>
+        <a href="receivables.html" class="nav-item"><i class="ph ph-hand-coins"></i> CxC</a>
+        <a href="clients.html" class="nav-item"><i class="ph ph-users"></i> Clientes</a>
+        <a href="users.html" class="nav-item"><i class="ph ph-users-three"></i> Usuarios</a>
+        <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Ajustes</a>
+        <a href="#" id="logoutBtn" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
+    </div>
+
+    <div class="main-content">
+        <div id="notificationArea"></div>
+        <div class="new-container">
+            <div class="step-indicator" id="step-indicator">Paso 1 de 3</div>
+
+            <form id="mainForm">
+                <input type="hidden" id="hiddenDocType" value="Presupuesto">
+                <input type="hidden" id="hiddenCurrencyMode" value="MIXTO">
+                <input type="hidden" id="hiddenClientId" value="">
+
+                <div class="step" id="step-1">
+                    <div class="header-container">
+                        <div class="document-info">
+                            <div class="document-title" id="documentTitle">PRESUPUESTO</div>
+                            <div class="document-number">
+                                N Control: <input type="text" id="control_number" value="Cargando..." style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.5); border-radius: 4px; font-weight: bold; font-size: 18px; text-align: center; width: 140px; padding: 8px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="document-type-selector">
+                        <div class="doc-type-btn active" data-doctype="Presupuesto"><i class="fas fa-file-invoice-dollar"></i> Presupuesto</div>
+                        <div class="doc-type-btn" data-doctype="Factura"><i class="fas fa-receipt"></i> Factura</div>
+                        <div class="doc-type-btn" data-doctype="Nota de Entrega"><i class="fas fa-truck"></i> Nota de Entrega</div>
+                    </div>
+
+                    <div class="payment-methods">
+                        <div class="payment-method active" data-payment="MIXTO"><i class="fas fa-exchange-alt"></i> Pago Mixto</div>
+                        <div class="payment-method" data-payment="USD"><i class="fas fa-dollar-sign"></i> Solo Dolares</div>
+                        <div class="payment-method" data-payment="VES"><i class="fas fa-bolt"></i> Solo Bolivares</div>
+                    </div>
+                </div>
+
+                <div class="step" id="step-2">
+                    <div class="info-section">
+                        <div class="c-card">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h2><i class="fas fa-user"></i> Datos del Cliente</h2>
+                                <button type="button" class="c-btn c-btn-primary" onclick="document.getElementById('clientModal').classList.add('active')"><i class="fas fa-search"></i> Buscar</button>
+                            </div>
+                            <div class="c-form-group" style="margin-top:15px;">
+                                <label>Nombre de Cliente *</label>
+                                <input type="text" id="clientName" required>
+                            </div>
+                            <div class="c-form-group">
+                                <label>RIF/Cedula *</label>
+                                <input type="text" id="clientRIF" required>
+                            </div>
+                            <div class="c-form-group">
+                                <label>Direccion del Cliente</label>
+                                <textarea id="clientAddress" rows="2"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="c-card">
+                            <h2><i class="fas fa-cog"></i> Configuracion de Cobro</h2>
+                            <div class="c-form-group">
+                                <label>Tasa del Dolar (BCV) <span id="fetch-status" style="color:var(--color-success); font-size: 12px;"></span></label>
+                                <input type="number" id="dollarRate" step="any" value="0.00" oninput="calculateAll()">
+                            </div>
+                            <div class="c-form-group">
+                                <label>Porcentaje de IVA (%) - Se calculara siempre</label>
+                                <input type="number" id="ivaPercentage" step="any" value="16" oninput="calculateAll()">
+                            </div>
+                            <div class="c-form-group">
+                                <label>Estado Inicial *</label>
+                                <select id="docStatus" required>
+                                    <option value="Pendiente">Pendiente (Acreditar a CxC)</option>
+                                    <option value="Pagado">Pagado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step" id="step-3">
+                    <div class="products-section">
+                        <h2><i class="fas fa-boxes"></i> Productos / Servicios</h2>
+                        <div class="product-form">
+                            <div class="c-form-group"><label>Descripcion</label><input type="text" id="pDesc"></div>
+                            <div class="c-form-group"><label>Unidad</label><input type="text" id="pUnit" value="Und"></div>
+                            <div class="c-form-group"><label>Cantidad</label><input type="text" id="pQty" value="1" placeholder="Ej: 1,5"></div>
+                            <div class="c-form-group"><label>Precio Unit. ($)</label><input type="text" id="pPrice" placeholder="Ej: 15,50"></div>
+                            <div class="c-form-group"><label><input type="checkbox" id="pAplicaIva" checked> Aplica IVA</label></div>
+                            <div class="c-form-group"><button type="button" class="c-btn c-btn-primary" onclick="addExtItem()"><i class="fas fa-plus"></i></button></div>
+                        </div>
+
+                        <div class="table-responsive" style="overflow-x: auto; width: 100%;">
+                            <table class="products-table">
+                                <thead>
+                                    <tr>
+                                        <th>Descripcion</th>
+                                        <th>Unidad</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio Unit. ($)</th>
+                                        <th>Aplica IVA</th>
+                                        <th>Precio Total ($)</th>
+                                        <th>Accion</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="items-body">
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="summary">
+                            <div class="summary-item"><span>Subtotal Base:</span><span id="subtotalDisplay">$0.00</span></div>
+                            <div class="summary-item"><span>Monto Exento (Sin IVA):</span><span id="exentoDisplay">$0.00</span></div>
+                            <div class="summary-item"><span>IVA (<span id="ivaLabel">16</span>%):</span><span id="ivaAmount">$0.00</span></div>
+                            <div class="total"><span>TOTAL GENERAL (USD):</span><span id="totalUSDAmount">$0.00</span></div>
+                            <div class="total" style="color:var(--color-success); border-top: none; padding-top: 0; margin-top: 5px;"><span>TOTAL GENERAL (VES):</span><span id="totalVESAmount">Bs. 0.00</span></div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;" id="final-submit-container">
+                        <button type="submit" id="submitDocBtn" class="c-btn c-btn-success" style="font-size: 1.2rem; padding: 15px 30px; box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);"><i class="fas fa-file-pdf"></i> Generar y Guardar Documento</button>
+                    </div>
+                </div>
+
+                <div class="mobile-nav-buttons" id="mobile-nav">
+                    <button type="button" id="btn-prev" class="c-btn c-btn-primary" style="flex: 1;" onclick="changeStep(-1)"><i class="fas fa-arrow-left"></i> Anterior</button>
+                    <button type="button" id="btn-next" class="c-btn c-btn-primary" style="flex: 1;" onclick="changeStep(1)">Siguiente <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Client Modal -->
+    <div id="clientModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="document.getElementById('clientModal').classList.remove('active')">&times;</span>
+            <h2 style="color: var(--color-primary); margin-bottom: 15px;"><i class="fas fa-users"></i> Seleccionar Cliente</h2>
+            <input type="text" id="clientSearch" placeholder="Buscar por nombre o RIF..." style="width:100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--color-border); border-radius: 6px; font-size: 16px;" onkeyup="filterClients()">
+
+            <div class="client-list" id="modalClientList">
+                <div style="padding:15px; text-align:center; color:#666;">Cargando clientes...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        if (localStorage.getItem('admin_logged_in') !== 'true') window.location.href = 'login.html';
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault(); localStorage.clear(); window.location.href = 'login.html';
+        });
+
+        function showNotification(msg, type = 'success') {
+            const area = document.getElementById('notificationArea');
+            const icon = type === 'success' ? 'ph-check-circle' : 'ph-warning';
+            area.innerHTML = `<div class="alert alert-${type}"><i class="ph ${icon}"></i> ${msg}</div>`;
+            setTimeout(() => { area.innerHTML = ''; }, 4000);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Step Wizard Logic for Mobile
+        let currentStep = 1; const totalSteps = 3;
+        function updateSteps() {
+            if (window.innerWidth > 768) {
+                document.querySelectorAll('.step').forEach(s => { s.style.display = 'block'; s.classList.remove('active'); });
+                document.getElementById('mobile-nav').style.display = 'none'; document.getElementById('step-indicator').style.display = 'none';
+                document.getElementById('final-submit-container').style.display = 'block';
+            } else {
+                document.querySelectorAll('.step').forEach(s => { s.style.display = 'none'; s.classList.remove('active'); });
+                const activeStep = document.getElementById('step-' + currentStep);
+                if(activeStep) { activeStep.style.display = 'block'; activeStep.classList.add('active'); }
+                document.getElementById('mobile-nav').style.display = 'flex';
+                document.getElementById('step-indicator').style.display = 'block';
+                document.getElementById('step-indicator').innerText = 'Paso ' + currentStep + ' de ' + totalSteps;
+                document.getElementById('btn-prev').style.display = currentStep === 1 ? 'none' : 'flex';
+                if (currentStep === totalSteps) { document.getElementById('btn-next').style.display = 'none'; document.getElementById('final-submit-container').style.display = 'block'; } 
+                else { document.getElementById('btn-next').style.display = 'flex'; document.getElementById('final-submit-container').style.display = 'none'; }
+            }
+        }
+        function changeStep(dir) { currentStep += dir; if (currentStep < 1) currentStep = 1; if (currentStep > totalSteps) currentStep = totalSteps; updateSteps(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        window.addEventListener('resize', updateSteps); updateSteps();
+
+        // Fetch Dolar
+        fetch('https://ve.dolarapi.com/v1/dolares/oficial').then(res => res.json()).then(data => {
+            document.getElementById('dollarRate').value = data.promedio.toFixed(2);
+            document.getElementById('fetch-status').innerText = "(Tasa Oficial BCV)"; calculateAll();
+        }).catch(() => document.getElementById('fetch-status').innerText = "(Error API)");
+
+        // App Data
+        let settingsData = null;
+        let clientsData = [];
+        let itemsList = [];
+
+        async function loadInitialData() {
+            try {
+                // 1. Settings
+                const { data: setD } = await supabaseClient.from('settings').select('*').limit(1);
+                if (setD && setD.length > 0) {
+                    settingsData = setD[0];
+                    updateControlNumber('Presupuesto');
+                }
+                
+                // 2. Clients
+                const { data: cliD } = await supabaseClient.from('clients').select('*');
+                if (cliD) {
+                    clientsData = cliD;
+                    renderClientsList();
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        function updateControlNumber(type) {
+            if(!settingsData) return;
+            let num = 1;
+            if (type === 'Presupuesto') num = settingsData.next_presupuesto || 1;
+            else if (type === 'Factura') num = settingsData.next_factura || 1;
+            else if (type === 'Nota de Entrega') num = settingsData.next_nota || 1;
+            document.getElementById('control_number').value = num.toString().padStart(6, '0');
+        }
+
+        function renderClientsList() {
+            const container = document.getElementById('modalClientList');
+            container.innerHTML = '';
+            if (clientsData.length === 0) {
+                container.innerHTML = '<div style="padding:15px; text-align:center; color:#666;">No hay clientes guardados. Escriba los datos manualmente en el formulario.</div>';
+                return;
+            }
+            clientsData.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'client-item';
+                div.onclick = () => { selectClient(c.id, c.name, c.rif, c.address); };
+                div.innerHTML = `<strong>${c.name}</strong><span style="font-size: 13px; color: #666;">RIF: ${c.rif || ''}</span>`;
+                container.appendChild(div);
+            });
+        }
+
+        function selectClient(id, name, rif, address) {
+            document.getElementById('hiddenClientId').value = id;
+            document.getElementById('clientName').value = name;
+            document.getElementById('clientRIF').value = rif || '';
+            document.getElementById('clientAddress').value = address || '';
+            document.getElementById('clientModal').classList.remove('active');
+        }
+
+        function filterClients() {
+            let filter = document.getElementById('clientSearch').value.toUpperCase();
+            let items = document.querySelectorAll('.client-item');
+            items.forEach(item => {
+                let text = item.innerText.toUpperCase();
+                item.style.display = text.indexOf(filter) > -1 ? "" : "none";
+            });
+        }
+
+        // UI Interactions
+        document.querySelectorAll('.doc-type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.doc-type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const t = btn.getAttribute('data-doctype');
+                document.getElementById('documentTitle').innerText = t.toUpperCase();
+                document.getElementById('hiddenDocType').value = t;
+                updateControlNumber(t);
+            });
+        });
+
+        document.querySelectorAll('.payment-method').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.payment-method').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('hiddenCurrencyMode').value = btn.getAttribute('data-payment');
+                calculateAll();
+            });
+        });
+
+        function parseLocalNumber(val) {
+            if(!val) return 0;
+            if(typeof val === 'number') return val;
+            let str = val.replace(',', '.'); return parseFloat(str) || 0;
+        }
+
+        function addExtItem() {
+            const desc = document.getElementById('pDesc').value;
+            const unit = document.getElementById('pUnit').value || 'Und';
+            const qty = parseLocalNumber(document.getElementById('pQty').value) || 1;
+            const price = parseLocalNumber(document.getElementById('pPrice').value);
+            const aplicaIva = document.getElementById('pAplicaIva').checked;
+
+            if(!desc || !price) return;
+
+            itemsList.push({ description: desc, unit: unit, quantity: qty, price: price, aplica_iva: aplicaIva });
+            renderItems();
+
+            document.getElementById('pDesc').value = '';
+            document.getElementById('pQty').value = '1';
+            document.getElementById('pPrice').value = '';
+            document.getElementById('pAplicaIva').checked = true;
+        }
+
+        function renderItems() {
+            const tbody = document.getElementById('items-body');
+            tbody.innerHTML = '';
+            itemsList.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Descripcion">${item.description}</td>
+                    <td data-label="Unidad">${item.unit}</td>
+                    <td data-label="Cantidad">${item.quantity}</td>
+                    <td data-label="Precio Unit. ($)">$${item.price.toFixed(2)}</td>
+                    <td data-label="Aplica IVA">${item.aplica_iva ? '<span style="color:var(--color-success);"><i class="fas fa-check"></i></span>' : '<span style="color:var(--color-danger);"><i class="fas fa-times"></i></span>'}</td>
+                    <td data-label="Precio Total ($)" class="i-total">$${(item.quantity * item.price).toFixed(2)}</td>
+                    <td data-label="Accion"><button type="button" class="c-btn c-btn-danger" onclick="removeItem(${index})"><i class="fas fa-trash"></i> Eliminar</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+            calculateAll();
+        }
+
+        function removeItem(index) { itemsList.splice(index, 1); renderItems(); }
+
+        let currentTotals = { subtotal: 0, tax: 0, total: 0 };
+
+        function calculateAll() {
+            let subtotalIva = 0; let subtotalExento = 0;
+            itemsList.forEach(i => {
+                if(i.aplica_iva) subtotalIva += (i.quantity * i.price);
+                else subtotalExento += (i.quantity * i.price);
+            });
+
+            const ivaPerc = parseLocalNumber(document.getElementById('ivaPercentage').value);
+            const ivaAmount = subtotalIva * (ivaPerc / 100);
+            const subtotalGeneral = subtotalIva + subtotalExento;
+            const totalUSD = subtotalGeneral + ivaAmount;
+            const rate = parseLocalNumber(document.getElementById('dollarRate').value) || 1;
+            const totalVES = totalUSD * rate;
+
+            currentTotals = { subtotal: subtotalGeneral, tax: ivaAmount, total: totalUSD };
+
+            document.getElementById('subtotalDisplay').innerText = "$" + subtotalIva.toFixed(2);
+            document.getElementById('exentoDisplay').innerText = "$" + subtotalExento.toFixed(2);
+            document.getElementById('ivaLabel').innerText = ivaPerc;
+            document.getElementById('ivaAmount').innerText = "$" + ivaAmount.toFixed(2);
+            document.getElementById('totalUSDAmount').innerText = "$" + totalUSD.toFixed(2);
+            document.getElementById('totalVESAmount').innerText = "Bs. " + totalVES.toFixed(2);
+        }
+
+        document.getElementById('pPrice').addEventListener('keypress', function (e) { if (e.key === 'Enter') { e.preventDefault(); addExtItem(); } });
+
+        function generatePDFDownload() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const docType = document.getElementById('hiddenDocType').value;
+            const controlNum = document.getElementById('control_number').value;
+            const today = new Date().toLocaleDateString();
+
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(30, 75, 130);
+            doc.text(settingsData ? (settingsData.company_name || 'MEYGO ERP') : 'MEYGO ERP', 14, 22);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            if(settingsData) {
+                doc.text(`RIF: ${settingsData.rif || ''}`, 14, 30);
+                doc.text(`Direccion: ${settingsData.address || ''}`, 14, 35);
+                doc.text(`Telefono: ${settingsData.phone || ''}`, 14, 40);
+            }
+
+            // Doc Info
+            doc.setFontSize(16);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`${docType.toUpperCase()}`, 150, 22);
+            doc.setFontSize(10);
+            doc.text(`N Control: ${controlNum}`, 150, 30);
+            doc.text(`Fecha: ${today}`, 150, 35);
+
+            // Client Info
+            doc.setFillColor(240, 245, 250);
+            doc.rect(14, 45, 182, 35, 'F');
+            doc.setFontSize(11);
+            doc.setTextColor(30, 75, 130);
+            doc.text('DATOS DEL CLIENTE', 18, 52);
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Nombre: ${document.getElementById('clientName').value}`, 18, 60);
+            doc.text(`RIF/Cedula: ${document.getElementById('clientRIF').value}`, 18, 65);
+            doc.text(`Direccion: ${document.getElementById('clientAddress').value.substring(0, 80)}`, 18, 70);
+
+            // Items Table
+            const tableBody = itemsList.map(item => [
+                item.description,
+                item.quantity,
+                '$' + item.price.toFixed(2),
+                item.aplica_iva ? 'Si' : 'No',
+                '$' + (item.quantity * item.price).toFixed(2)
+            ]);
+
+            doc.autoTable({
+                startY: 85,
+                head: [['Descripcion', 'Cant.', 'Precio Unit.', 'IVA', 'Total']],
+                body: tableBody,
+                theme: 'striped',
+                headStyles: { fillColor: [30, 75, 130] },
+                styles: { fontSize: 9 }
+            });
+
+            // Totals
+            const finalY = doc.lastAutoTable.finalY + 10;
+            doc.setFontSize(10);
+            doc.text(`Subtotal: $${currentTotals.subtotal.toFixed(2)}`, 140, finalY);
+            doc.text(`IVA: $${currentTotals.tax.toFixed(2)}`, 140, finalY + 6);
+            doc.setFontSize(12);
+            doc.setTextColor(30, 75, 130);
+            doc.text(`TOTAL USD: $${currentTotals.total.toFixed(2)}`, 140, finalY + 14);
+            
+            const rate = parseLocalNumber(document.getElementById('dollarRate').value) || 1;
+            const totalVES = currentTotals.total * rate;
+            doc.setTextColor(76, 175, 80);
+            doc.text(`TOTAL VES: Bs. ${totalVES.toFixed(2)}`, 140, finalY + 20);
+
+            // Payment Info
+            if (settingsData && settingsData.payment_info) {
+                doc.setFontSize(9);
+                doc.setTextColor(100, 100, 100);
+                const splitText = doc.splitTextToSize(settingsData.payment_info, 180);
+                doc.text(splitText, 14, finalY + 35);
+            }
+
+            doc.save(`${docType}_${controlNum}.pdf`);
+        }
+
+        // Submit Form
+        document.getElementById('mainForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (itemsList.length === 0) { alert('Debes agregar al menos un producto.'); return; }
+
+            const btn = document.getElementById('submitDocBtn');
+            btn.disabled = true; btn.innerHTML = 'Guardando...';
+
+            const clientId = document.getElementById('hiddenClientId').value;
+            const docType = document.getElementById('hiddenDocType').value;
+            const controlNum = document.getElementById('control_number').value;
+            
+            // Format YYYY-MM-DD
+            const today = new Date().toISOString().split('T')[0];
+
+            try {
+                // 1. Insert Document
+                const docPayload = {
+                    control_number: controlNum,
+                    client_id: clientId ? parseInt(clientId) : null, // If they typed manually, we'd need a client_id. Since schema requires FK, we assume they selected from modal.
+                    type: docType,
+                    date: today,
+                    status: document.getElementById('docStatus').value,
+                    subtotal: currentTotals.subtotal,
+                    tax: currentTotals.tax,
+                    total: currentTotals.total,
+                    created_by: localStorage.getItem('admin_username') || 'admin'
+                };
+
+                const { data: insertedDoc, error: docErr } = await supabaseClient.from('documents').insert([docPayload]).select();
+                if (docErr) throw docErr;
+                
+                const newDocId = insertedDoc[0].id;
+
+                // 2. Insert Items
+                const itemsPayload = itemsList.map(i => ({
+                    document_id: newDocId,
+                    description: i.description,
+                    quantity: i.quantity,
+                    price: i.price,
+                    total: i.quantity * i.price
+                }));
+                const { error: itemsErr } = await supabaseClient.from('document_items').insert(itemsPayload);
+                if (itemsErr) throw itemsErr;
+
+                // 3. Update Settings Counter
+                if (settingsData) {
+                    let updateField = {};
+                    if (docType === 'Presupuesto') updateField.next_presupuesto = (settingsData.next_presupuesto || 1) + 1;
+                    else if (docType === 'Factura') updateField.next_factura = (settingsData.next_factura || 1) + 1;
+                    else updateField.next_nota = (settingsData.next_nota || 1) + 1;
+
+                    await supabaseClient.from('settings').update(updateField).eq('id', settingsData.id);
+                }
+
+                // Generate PDF locally
+                generatePDFDownload();
+
+                showNotification('Documento emitido y guardado exitosamente. Descargando PDF...');
+                setTimeout(() => { window.location.href = 'documents_registry.html'; }, 3000);
+                
+            } catch (err) {
+                showNotification(err.message, 'error');
+                btn.disabled = false; btn.innerHTML = '<i class="fas fa-file-pdf"></i> Generar y Guardar Documento';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', loadInitialData);
+    </script>
+</body>
+</html>
