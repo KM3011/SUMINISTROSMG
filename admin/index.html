@@ -25,7 +25,7 @@
         <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Ajustes</a>
         <a href="#" id="logoutBtn" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
     </div>
-    
+
     <div class="main-content page-fade-in" id="dashboardContent">
         <div class="header stagger-1">
             <h1>Resumen General</h1>
@@ -55,7 +55,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="card stagger-3">
             <h3>Documentos Recientes</h3>
             <div class="table-responsive">
@@ -110,40 +110,42 @@
             try {
                 // 1. Fetch Income
                 const { data: incomeData } = await supabaseClient
-                    .from('financial_records')
+                    .from('finances')
                     .select('amount')
                     .eq('type', 'Ingreso')
                     .eq('currency', 'USD');
-                
+
                 let totalUSD = 0;
                 if (incomeData) {
                     totalUSD = incomeData.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
                 }
                 document.getElementById('totalIncomeUSD').innerText = '$' + totalUSD.toFixed(2);
 
-                // 2. Fetch Pending Docs (Status wasn't in original schema, approximating by type or just counting all for now)
+                // 2. Fetch Pending Docs
                 const { count: pendingCount } = await supabaseClient
                     .from('documents')
-                    .select('*', { count: 'exact', head: true });
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'Pendiente');
                 document.getElementById('pendingDocs').innerText = pendingCount || 0;
 
                 // 3. Fetch Recent Docs
                 const { data: recentDocs, error: docsError } = await supabaseClient
                     .from('documents')
-                    .select('*')
+                    .select('*, clients(name)')
                     .order('created_at', { ascending: false })
                     .limit(5);
 
                 const tableBody = document.getElementById('recentDocsTable');
                 if (docsError) throw docsError;
-                
+
                 if (recentDocs && recentDocs.length > 0) {
                     tableBody.innerHTML = '';
                     recentDocs.forEach(doc => {
+                        const clientName = doc.clients ? doc.clients.name : 'N/A';
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td><strong>${doc.type}</strong></td>
-                            <td>${doc.client_name}</td>
+                            <td>${clientName}</td>
                             <td>$${parseFloat(doc.total).toFixed(2)}</td>
                             <td>${new Date(doc.created_at).toLocaleDateString()}</td>
                         `;
@@ -161,3 +163,4 @@
     </script>
 </body>
 </html>
+
