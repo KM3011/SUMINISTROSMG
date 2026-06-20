@@ -19,9 +19,9 @@
         .badge-pendiente { background: #ffedd5; color: #ea580c; }
     </style>
 </head>
-<body class="theme-servicios">
+<body>
     <div class="sidebar">
-        <img src="../assets/images/logo-servicios.png" alt="Servicios Logo" class="sidebar-logo">
+        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
         <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
         <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
         <a href="documents_registry.html" class="nav-item active"><i class="ph ph-folders"></i> Documentos</a>
@@ -90,8 +90,8 @@
             const tbody = document.getElementById('documentsTableBody');
             try {
                 const { data, error } = await supabaseClient
-                    .from('servicios_documents')
-                    .select('*, servicios_clients(name)')
+                    .from('documents')
+                    .select('*, clients(name)')
                     .order('created_at', { ascending: false });
                 
                 if (error) throw error;
@@ -104,7 +104,7 @@
 
                 data.forEach(doc => {
                     const tr = document.createElement('tr');
-                    const clientName = doc.servicios_clients ? doc.servicios_clients.name : 'Cliente Eliminado';
+                    const clientName = doc.clients ? doc.clients.name : 'Cliente Eliminado';
                     const badgeClass = doc.status === 'Pagado' ? 'badge-pagado' : 'badge-pendiente';
                     
                     tr.innerHTML = `
@@ -133,7 +133,7 @@
         async function deleteDocument(id, controlNum) {
             if (!confirm(`Seguro que deseas eliminar el documento ${controlNum}? Se eliminara permanentemente.`)) return;
             try {
-                const { error } = await supabaseClient.from('servicios_documents').delete().eq('id', id);
+                const { error } = await supabaseClient.from('documents').delete().eq('id', id);
                 if (error) throw error;
                 
                 showNotification(`Documento ${controlNum} eliminado exitosamente.`);
@@ -151,21 +151,21 @@
             try {
                 // 1. Fetch Document and Client
                 const { data: docData, error: docErr } = await supabaseClient
-                    .from('servicios_documents')
-                    .select('*, servicios_clients(*)')
+                    .from('documents')
+                    .select('*, clients(*)')
                     .eq('id', docId)
                     .single();
                 if (docErr) throw docErr;
 
                 // 2. Fetch Items
                 const { data: itemsData, error: itemsErr } = await supabaseClient
-                    .from('servicios_document_items')
+                    .from('document_items')
                     .select('*')
                     .eq('document_id', docId);
                 if (itemsErr) throw itemsErr;
 
                 // 3. Fetch Settings
-                const { data: settingsResult } = await supabaseClient.from('servicios_settings').select('*').limit(1);
+                const { data: settingsResult } = await supabaseClient.from('settings').select('*').limit(1);
                 const settingsData = settingsResult && settingsResult.length > 0 ? settingsResult[0] : null;
 
                 // 4. Fetch Rate
@@ -180,54 +180,88 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 
-                // Header
-                doc.setFontSize(20);
-                doc.setTextColor(30, 75, 130);
-                doc.text(settingsData ? (settingsData.company_name || 'MEYGO ERP') : 'MEYGO ERP', 14, 22);
-                
-                doc.setFontSize(10);
-                doc.setTextColor(100, 100, 100);
-                if(settingsData) {
-                    doc.text(`RIF: ${settingsData.rif || ''}`, 14, 30);
-                    doc.text(`Direccion: ${settingsData.address || ''}`, 14, 35);
-                    doc.text(`Telefono: ${settingsData.phone || ''}`, 14, 40);
-                }
+                const isFactura = docData.type === 'Factura';
+                const isSinPrecios = docData.type === 'Nota de Entrega (Sin Precios)';
+                let titleText = docData.type.toUpperCase();
+                if (isSinPrecios) titleText = 'NOTA DE ENTREGA';
 
-                // Doc Info
-                doc.setFontSize(16);
-                doc.setTextColor(0, 0, 0);
-                doc.text(`${docData.type.toUpperCase()}`, 150, 22);
-                doc.setFontSize(10);
-                doc.text(`N Control: ${docData.control_number}`, 150, 30);
-                
-                // Date formatting
-                const docDate = new Date(docData.date);
-                docDate.setMinutes(docDate.getMinutes() + docDate.getTimezoneOffset());
-                doc.text(`Fecha: ${docDate.toLocaleDateString()}`, 150, 35);
+                let currentY = 22;
+
+                // Header
+                if (!isFactura) {
+                    doc.setFontSize(20);
+                    doc.setTextColor(30, 75, 130);
+                    doc.text(settingsData ? (settingsData.company_name || 'MEYGO ERP') : 'MEYGO ERP', 14, currentY);
+                    
+                    doc.setFontSize(10);
+                    doc.setTextColor(100, 100, 100);
+                    if(settingsData) {
+                        doc.text(`RIF: ${settingsData.rif || ''}`, 14, currentY + 8);
+                        doc.text(`Direccion: ${settingsData.address || ''}`, 14, currentY + 13);
+                        doc.text(`Telefono: ${settingsData.phone || ''}`, 14, currentY + 18);
+                    }
+                    
+                    doc.setFontSize(16);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(titleText, 150, currentY);
+                    doc.setFontSize(10);
+                    doc.text(`N Control: ${docData.control_number}`, 150, currentY + 8);
+                    
+                    const docDate = new Date(docData.date);
+                    docDate.setMinutes(docDate.getMinutes() + docDate.getTimezoneOffset());
+                    doc.text(`Fecha: ${docDate.toLocaleDateString()}`, 150, currentY + 13);
+                    
+                    currentY = 45; // Start client info
+                } else {
+                    doc.setFontSize(18);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(titleText, 150, 40); // Title a bit lower, no header info
+                    currentY = 50; // Start client info
+                }
 
                 // Client Info
                 doc.setFillColor(240, 245, 250);
-                doc.rect(14, 45, 182, 35, 'F');
+                doc.rect(14, currentY, 182, 35, 'F');
                 doc.setFontSize(11);
                 doc.setTextColor(30, 75, 130);
-                doc.text('DATOS DEL CLIENTE', 18, 52);
+                doc.text('DATOS DEL CLIENTE', 18, currentY + 7);
                 doc.setFontSize(10);
                 doc.setTextColor(0, 0, 0);
-                doc.text(`Nombre: ${docData.servicios_clients ? docData.servicios_clients.name : 'N/A'}`, 18, 60);
-                doc.text(`RIF/Cedula: ${docData.servicios_clients ? docData.servicios_clients.rif : 'N/A'}`, 18, 65);
-                doc.text(`Direccion: ${docData.servicios_clients && docData.servicios_clients.address ? docData.servicios_clients.address.substring(0, 80) : 'N/A'}`, 18, 70);
+                doc.text(`Nombre: ${docData.clients ? docData.clients.name : 'N/A'}`, 18, currentY + 15);
+                doc.text(`RIF/Cedula: ${docData.clients ? docData.clients.rif : 'N/A'}`, 18, currentY + 20);
+                doc.text(`Direccion: ${docData.clients && docData.clients.address ? docData.clients.address.substring(0, 80) : 'N/A'}`, 18, currentY + 25);
 
                 // Items Table
-                const tableBody = itemsData.map(item => [
-                    item.description,
-                    item.quantity,
-                    '$' + parseFloat(item.price).toFixed(2),
-                    '$' + parseFloat(item.total).toFixed(2)
-                ]);
+                let headArr = [];
+                let tableBody = [];
+                
+                if (isSinPrecios) {
+                    headArr = [['Descripcion', 'Cant.']];
+                    tableBody = itemsData.map(item => [
+                        item.description,
+                        item.quantity
+                    ]);
+                } else if (isFactura) {
+                    headArr = [['Descripcion', 'Cant.', 'Precio Unit. (Bs)', 'Total (Bs)']];
+                    tableBody = itemsData.map(item => [
+                        item.description,
+                        item.quantity,
+                        'Bs. ' + (parseFloat(item.price) * currentRate).toFixed(2),
+                        'Bs. ' + (parseFloat(item.total) * currentRate).toFixed(2)
+                    ]);
+                } else {
+                    headArr = [['Descripcion', 'Cant.', 'Precio Unit.', 'Total']];
+                    tableBody = itemsData.map(item => [
+                        item.description,
+                        item.quantity,
+                        '$' + parseFloat(item.price).toFixed(2),
+                        '$' + parseFloat(item.total).toFixed(2)
+                    ]);
+                }
 
                 doc.autoTable({
-                    startY: 85,
-                    head: [['Descripcion', 'Cant.', 'Precio Unit.', 'Total']],
+                    startY: currentY + 40,
+                    head: headArr,
                     body: tableBody,
                     theme: 'striped',
                     headStyles: { fillColor: [30, 75, 130] },
@@ -235,24 +269,42 @@
                 });
 
                 // Totals
-                const finalY = doc.lastAutoTable.finalY + 10;
-                doc.setFontSize(10);
-                doc.text(`Subtotal: $${parseFloat(docData.subtotal).toFixed(2)}`, 140, finalY);
-                doc.text(`IVA: $${parseFloat(docData.tax).toFixed(2)}`, 140, finalY + 6);
-                doc.setFontSize(12);
-                doc.setTextColor(30, 75, 130);
-                doc.text(`TOTAL USD: $${parseFloat(docData.total).toFixed(2)}`, 140, finalY + 14);
-                
-                const totalVES = docData.total * currentRate;
-                doc.setTextColor(76, 175, 80);
-                doc.text(`TOTAL VES: Bs. ${totalVES.toFixed(2)}`, 140, finalY + 20);
-
-                // Payment Info
-                if (settingsData && settingsData.payment_info) {
-                    doc.setFontSize(9);
-                    doc.setTextColor(100, 100, 100);
-                    const splitText = doc.splitTextToSize(settingsData.payment_info, 180);
-                    doc.text(splitText, 14, finalY + 35);
+                if (!isSinPrecios) {
+                    const finalY = doc.lastAutoTable.finalY + 10;
+                    
+                    if (isFactura) {
+                        const subVES = (docData.subtotal * currentRate).toFixed(2);
+                        const taxVES = (docData.tax * currentRate).toFixed(2);
+                        const totVES = (docData.total * currentRate).toFixed(2);
+                        
+                        doc.setFontSize(10);
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(`Subtotal: Bs. ${subVES}`, 140, finalY);
+                        doc.text(`IVA: Bs. ${taxVES}`, 140, finalY + 6);
+                        doc.setFontSize(12);
+                        doc.setTextColor(30, 75, 130);
+                        doc.text(`TOTAL: Bs. ${totVES}`, 140, finalY + 14);
+                    } else {
+                        doc.setFontSize(10);
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(`Subtotal: $${parseFloat(docData.subtotal).toFixed(2)}`, 140, finalY);
+                        doc.text(`IVA: $${parseFloat(docData.tax).toFixed(2)}`, 140, finalY + 6);
+                        doc.setFontSize(12);
+                        doc.setTextColor(30, 75, 130);
+                        doc.text(`TOTAL USD: $${parseFloat(docData.total).toFixed(2)}`, 140, finalY + 14);
+                        
+                        const totalVES = docData.total * currentRate;
+                        doc.setTextColor(76, 175, 80);
+                        doc.text(`TOTAL VES: Bs. ${totalVES.toFixed(2)}`, 140, finalY + 20);
+                    }
+                    
+                    // Payment Info
+                    if (settingsData && settingsData.payment_info) {
+                        doc.setFontSize(9);
+                        doc.setTextColor(100, 100, 100);
+                        const splitText = doc.splitTextToSize(settingsData.payment_info, 180);
+                        doc.text(splitText, 14, finalY + 35);
+                    }
                 }
 
                 doc.save(`${docData.type}_${docData.control_number}.pdf`);
@@ -270,6 +322,4 @@
     </script>
 </body>
 </html>
-
-
 
