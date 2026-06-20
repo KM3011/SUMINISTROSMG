@@ -147,6 +147,10 @@
                         <div class="doc-type-btn" data-doctype="Factura"><i class="fas fa-receipt"></i> Factura</div>
                         <div class="doc-type-btn" data-doctype="Nota de Entrega"><i class="fas fa-truck"></i> Nota de Entrega</div>
                     </div>
+                    
+                    <div id="newDocHidePricesContainer" style="display:none; text-align:center; margin-bottom:15px;">
+                        <label style="cursor:pointer; font-weight:bold; padding:8px; background:var(--color-light-bg); border-radius:6px; display:inline-block; border:1px solid var(--color-border);"><input type="checkbox" id="hidePricesNewCheckbox"> Ocultar montos en el PDF (Solo para Nota de Entrega)</label>
+                    </div>
 
                     <div class="payment-methods">
                         <div class="payment-method active" data-payment="MIXTO"><i class="fas fa-exchange-alt"></i> Pago Mixto</div>
@@ -382,6 +386,14 @@
                 const t = btn.getAttribute('data-doctype');
                 document.getElementById('documentTitle').innerText = t.toUpperCase();
                 document.getElementById('hiddenDocType').value = t;
+                
+                if (t === 'Nota de Entrega') {
+                    document.getElementById('newDocHidePricesContainer').style.display = 'block';
+                } else {
+                    document.getElementById('newDocHidePricesContainer').style.display = 'none';
+                    document.getElementById('hidePricesNewCheckbox').checked = false;
+                }
+                
                 updateControlNumber(t);
             });
         });
@@ -472,55 +484,98 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            const docType = document.getElementById('hiddenDocType').value;
+            const docTypeRaw = document.getElementById('hiddenDocType').value;
+            const isFactura = docTypeRaw === 'Factura';
+            let finalType = docTypeRaw;
+            if (docTypeRaw === 'Nota de Entrega' && document.getElementById('hidePricesNewCheckbox') && document.getElementById('hidePricesNewCheckbox').checked) {
+                finalType = 'Nota de Entrega (Sin Precios)';
+            }
+            const isSinPrecios = finalType === 'Nota de Entrega (Sin Precios)';
+            
             const controlNum = document.getElementById('control_number').value;
             const today = new Date().toLocaleDateString();
 
-            // Header
-            doc.setFontSize(20);
-            doc.setTextColor(30, 75, 130);
-            doc.text(settingsData ? (settingsData.company_name || 'MEYGO ERP') : 'MEYGO ERP', 14, 22);
-            
-            doc.setFontSize(10);
-            doc.setTextColor(100, 100, 100);
-            if(settingsData) {
-                doc.text(`RIF: ${settingsData.rif || ''}`, 14, 30);
-                doc.text(`Direccion: ${settingsData.address || ''}`, 14, 35);
-                doc.text(`Telefono: ${settingsData.phone || ''}`, 14, 40);
-            }
+            let titleText = finalType.toUpperCase();
+            if (isSinPrecios) titleText = 'NOTA DE ENTREGA';
 
-            // Doc Info
-            doc.setFontSize(16);
-            doc.setTextColor(0, 0, 0);
-            doc.text(`${docType.toUpperCase()}`, 150, 22);
-            doc.setFontSize(10);
-            doc.text(`N Control: ${controlNum}`, 150, 30);
-            doc.text(`Fecha: ${today}`, 150, 35);
+            let currentY = 22;
+
+            // Header
+            if (!isFactura) {
+                doc.setFontSize(20);
+                doc.setTextColor(30, 75, 130);
+                doc.text(settingsData ? (settingsData.company_name || 'MEYGO ERP') : 'MEYGO ERP', 14, currentY);
+                
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                if(settingsData) {
+                    doc.text(`RIF: ${settingsData.rif || ''}`, 14, currentY + 8);
+                    doc.text(`Direccion: ${settingsData.address || ''}`, 14, currentY + 13);
+                    doc.text(`Telefono: ${settingsData.phone || ''}`, 14, currentY + 18);
+                }
+                
+                doc.setFontSize(16);
+                doc.setTextColor(0, 0, 0);
+                doc.text(titleText, 150, currentY);
+                doc.setFontSize(10);
+                doc.text(`N Control: ${controlNum}`, 150, currentY + 8);
+                doc.text(`Fecha: ${today}`, 150, currentY + 13);
+                currentY = 45;
+            } else {
+                doc.setFontSize(18);
+                doc.setTextColor(0, 0, 0);
+                doc.text(titleText, 150, 40);
+                currentY = 50;
+            }
 
             // Client Info
             doc.setFillColor(240, 245, 250);
-            doc.rect(14, 45, 182, 35, 'F');
+            doc.rect(14, currentY, 182, 35, 'F');
             doc.setFontSize(11);
             doc.setTextColor(30, 75, 130);
-            doc.text('DATOS DEL CLIENTE', 18, 52);
+            doc.text('DATOS DEL CLIENTE', 18, currentY + 7);
             doc.setFontSize(10);
             doc.setTextColor(0, 0, 0);
-            doc.text(`Nombre: ${document.getElementById('clientName').value}`, 18, 60);
-            doc.text(`RIF/Cedula: ${document.getElementById('clientRIF').value}`, 18, 65);
-            doc.text(`Direccion: ${document.getElementById('clientAddress').value.substring(0, 80)}`, 18, 70);
+            doc.text(`Nombre: ${document.getElementById('clientName').value}`, 18, currentY + 15);
+            doc.text(`RIF/Cedula: ${document.getElementById('clientRIF').value}`, 18, currentY + 20);
+            doc.text(`Direccion: ${document.getElementById('clientAddress').value.substring(0, 80)}`, 18, currentY + 25);
 
             // Items Table
-            const tableBody = itemsList.map(item => [
-                item.description,
-                item.quantity,
-                '$' + item.price.toFixed(2),
-                item.aplica_iva ? 'Si' : 'No',
-                '$' + (item.quantity * item.price).toFixed(2)
-            ]);
+            const rate = parseLocalNumber(document.getElementById('dollarRate').value) || 1;
+            
+            let headArr = [];
+            let tableBody = [];
+            
+            if (isSinPrecios) {
+                headArr = [['Descripcion', 'Cant.', 'IVA']];
+                tableBody = itemsList.map(item => [
+                    item.description,
+                    item.quantity,
+                    item.aplica_iva ? 'Si' : 'No'
+                ]);
+            } else if (isFactura) {
+                headArr = [['Descripcion', 'Cant.', 'Precio Unit. (Bs)', 'IVA', 'Total (Bs)']];
+                tableBody = itemsList.map(item => [
+                    item.description,
+                    item.quantity,
+                    'Bs. ' + (item.price * rate).toFixed(2),
+                    item.aplica_iva ? 'Si' : 'No',
+                    'Bs. ' + (item.quantity * item.price * rate).toFixed(2)
+                ]);
+            } else {
+                headArr = [['Descripcion', 'Cant.', 'Precio Unit.', 'IVA', 'Total']];
+                tableBody = itemsList.map(item => [
+                    item.description,
+                    item.quantity,
+                    '$' + item.price.toFixed(2),
+                    item.aplica_iva ? 'Si' : 'No',
+                    '$' + (item.quantity * item.price).toFixed(2)
+                ]);
+            }
 
             doc.autoTable({
-                startY: 85,
-                head: [['Descripcion', 'Cant.', 'Precio Unit.', 'IVA', 'Total']],
+                startY: currentY + 40,
+                head: headArr,
                 body: tableBody,
                 theme: 'striped',
                 headStyles: { fillColor: [30, 75, 130] },
@@ -528,28 +583,44 @@
             });
 
             // Totals
-            const finalY = doc.lastAutoTable.finalY + 10;
-            doc.setFontSize(10);
-            doc.text(`Subtotal: $${currentTotals.subtotal.toFixed(2)}`, 140, finalY);
-            doc.text(`IVA: $${currentTotals.tax.toFixed(2)}`, 140, finalY + 6);
-            doc.setFontSize(12);
-            doc.setTextColor(30, 75, 130);
-            doc.text(`TOTAL USD: $${currentTotals.total.toFixed(2)}`, 140, finalY + 14);
-            
-            const rate = parseLocalNumber(document.getElementById('dollarRate').value) || 1;
-            const totalVES = currentTotals.total * rate;
-            doc.setTextColor(76, 175, 80);
-            doc.text(`TOTAL VES: Bs. ${totalVES.toFixed(2)}`, 140, finalY + 20);
-
-            // Payment Info
-            if (settingsData && settingsData.payment_info) {
-                doc.setFontSize(9);
-                doc.setTextColor(100, 100, 100);
-                const splitText = doc.splitTextToSize(settingsData.payment_info, 180);
-                doc.text(splitText, 14, finalY + 35);
+            if (!isSinPrecios) {
+                const finalY = doc.lastAutoTable.finalY + 10;
+                
+                if (isFactura) {
+                    const subVES = (currentTotals.subtotal * rate).toFixed(2);
+                    const taxVES = (currentTotals.tax * rate).toFixed(2);
+                    const totVES = (currentTotals.total * rate).toFixed(2);
+                    
+                    doc.setFontSize(10);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(`Subtotal: Bs. ${subVES}`, 140, finalY);
+                    doc.text(`IVA: Bs. ${taxVES}`, 140, finalY + 6);
+                    doc.setFontSize(12);
+                    doc.setTextColor(30, 75, 130);
+                    doc.text(`TOTAL: Bs. ${totVES}`, 140, finalY + 14);
+                } else {
+                    doc.setFontSize(10);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(`Subtotal: $${currentTotals.subtotal.toFixed(2)}`, 140, finalY);
+                    doc.text(`IVA: $${currentTotals.tax.toFixed(2)}`, 140, finalY + 6);
+                    doc.setFontSize(12);
+                    doc.setTextColor(30, 75, 130);
+                    doc.text(`TOTAL USD: $${currentTotals.total.toFixed(2)}`, 140, finalY + 14);
+                    
+                    const totalVES = currentTotals.total * rate;
+                    doc.setTextColor(76, 175, 80);
+                    doc.text(`TOTAL VES: Bs. ${totalVES.toFixed(2)}`, 140, finalY + 20);
+                }
+                
+                if (settingsData && settingsData.payment_info) {
+                    doc.setFontSize(9);
+                    doc.setTextColor(100, 100, 100);
+                    const splitText = doc.splitTextToSize(settingsData.payment_info, 180);
+                    doc.text(splitText, 14, finalY + 35);
+                }
             }
 
-            doc.save(`${docType}_${controlNum}.pdf`);
+            doc.save(`${finalType}_${controlNum}.pdf`);
         }
 
         // Submit Form
@@ -561,7 +632,11 @@
             btn.disabled = true; btn.innerHTML = 'Guardando...';
 
             const clientId = document.getElementById('hiddenClientId').value;
-            const docType = document.getElementById('hiddenDocType').value;
+            const docTypeRaw = document.getElementById('hiddenDocType').value;
+            let finalType = docTypeRaw;
+            if (docTypeRaw === 'Nota de Entrega' && document.getElementById('hidePricesNewCheckbox') && document.getElementById('hidePricesNewCheckbox').checked) {
+                finalType = 'Nota de Entrega (Sin Precios)';
+            }
             const controlNum = document.getElementById('control_number').value;
             
             // Format YYYY-MM-DD
@@ -572,7 +647,7 @@
                 const docPayload = {
                     control_number: controlNum,
                     client_id: clientId ? parseInt(clientId) : null, // If they typed manually, we'd need a client_id. Since schema requires FK, we assume they selected from modal.
-                    type: docType,
+                    type: finalType,
                     date: today,
                     status: document.getElementById('docStatus').value,
                     subtotal: currentTotals.subtotal,
@@ -600,8 +675,8 @@
                 // 3. Update Settings Counter
                 if (settingsData) {
                     let updateField = {};
-                    if (docType === 'Presupuesto') updateField.next_presupuesto = (settingsData.next_presupuesto || 1) + 1;
-                    else if (docType === 'Factura') updateField.next_factura = (settingsData.next_factura || 1) + 1;
+                    if (docTypeRaw === 'Presupuesto') updateField.next_presupuesto = (settingsData.next_presupuesto || 1) + 1;
+                    else if (docTypeRaw === 'Factura') updateField.next_factura = (settingsData.next_factura || 1) + 1;
                     else updateField.next_nota = (settingsData.next_nota || 1) + 1;
 
                     await supabaseClient.from('settings').update(updateField).eq('id', settingsData.id);
