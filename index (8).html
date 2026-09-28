@@ -14,7 +14,7 @@
 </head>
 <body class="theme-suministros">
     <div class="sidebar">
-        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
+        <img src="../assets/images/logo-servicios.png" alt="Servicios Logo" class="sidebar-logo">
         <a href="index.html" class="nav-item active"><i class="ph ph-squares-four"></i> Dashboard</a>
         <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
         <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
@@ -110,7 +110,7 @@
             try {
                 // 1. Fetch Income
                 const { data: incomeData } = await supabaseClient
-                    .from('finances')
+                    .from('servicios_finances')
                     .select('amount')
                     .eq('type', 'Ingreso')
                     .eq('currency', 'USD');
@@ -123,15 +123,15 @@
 
                 // 2. Fetch Pending Docs
                 const { count: pendingCount } = await supabaseClient
-                    .from('documents')
+                    .from('servicios_documents')
                     .select('*', { count: 'exact', head: true })
                     .eq('status', 'Pendiente');
                 document.getElementById('pendingDocs').innerText = pendingCount || 0;
 
                 // 3. Fetch Recent Docs
                 const { data: recentDocs, error: docsError } = await supabaseClient
-                    .from('documents')
-                    .select('*, clients(name)')
+                    .from('servicios_documents')
+                    .select('*, servicios_clients(name)')
                     .order('created_at', { ascending: false })
                     .limit(5);
 
@@ -141,7 +141,7 @@
                 if (recentDocs && recentDocs.length > 0) {
                     tableBody.innerHTML = '';
                     recentDocs.forEach(doc => {
-                        const clientName = doc.clients ? doc.clients.name : 'N/A';
+                        const clientName = doc.servicios_clients ? doc.servicios_clients.name : 'N/A';
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td><strong>${doc.type}</strong></td>
@@ -163,5 +163,7 @@
     </script>
 </body>
 </html>
+
+
 
 

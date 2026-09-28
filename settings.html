@@ -15,9 +15,9 @@
         .alert-error { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
-<body class="theme-servicios">
+<body>
     <div class="sidebar">
-        <img src="../assets/images/logo-servicios.png" alt="Servicios Logo" class="sidebar-logo">
+        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
         <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
         <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
         <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
@@ -136,7 +136,7 @@
 
         async function fetchSettings() {
             try {
-                const { data, error } = await supabaseClient.from('servicios_settings').select('*').limit(1);
+                const { data, error } = await supabaseClient.from('settings').select('*').limit(1);
                 if (error) throw error;
 
                 if (data && data.length > 0) {
@@ -174,10 +174,10 @@
 
             try {
                 if (settingsId) {
-                    const { error } = await supabaseClient.from('servicios_settings').update(payload).eq('id', settingsId);
+                    const { error } = await supabaseClient.from('settings').update(payload).eq('id', settingsId);
                     if (error) throw error;
                 } else {
-                    const { error } = await supabaseClient.from('servicios_settings').insert([payload]);
+                    const { error } = await supabaseClient.from('settings').insert([payload]);
                     if (error) throw error;
                     // fetch id
                     await fetchSettings();
@@ -194,6 +194,4 @@
     </script>
 </body>
 </html>
-
-
 

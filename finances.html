@@ -29,9 +29,9 @@
         .badge-egreso { background: #fee2e2; color: #dc2626; }
     </style>
 </head>
-<body class="theme-servicios">
+<body>
     <div class="sidebar">
-        <img src="../assets/images/logo-servicios.png" alt="Servicios Logo" class="sidebar-logo">
+        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
         <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
         <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
         <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
@@ -173,7 +173,7 @@
         async function fetchFinances() {
             const tbody = document.getElementById('financesTableBody');
             try {
-                const { data, error } = await supabaseClient.from('servicios_finances').select('*').order('created_at', { ascending: false });
+                const { data, error } = await supabaseClient.from('finances').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
 
                 tbody.innerHTML = '';
@@ -243,7 +243,7 @@
             };
 
             try {
-                const { error } = await supabaseClient.from('servicios_finances').insert([newRecord]);
+                const { error } = await supabaseClient.from('finances').insert([newRecord]);
                 if (error) throw error;
                 
                 showNotification('Movimiento registrado exitosamente.');
@@ -259,7 +259,7 @@
         async function deleteRecord(id) {
             if (!confirm(`Seguro que deseas eliminar este movimiento?`)) return;
             try {
-                const { error } = await supabaseClient.from('servicios_finances').delete().eq('id', id);
+                const { error } = await supabaseClient.from('finances').delete().eq('id', id);
                 if (error) throw error;
                 
                 showNotification('Movimiento eliminado.');
@@ -273,6 +273,4 @@
     </script>
 </body>
 </html>
-
-
 

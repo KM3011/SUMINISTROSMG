@@ -25,9 +25,9 @@
         .alert-error { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
-<body class="theme-servicios">
+<body>
     <div class="sidebar">
-        <img src="../assets/images/logo-servicios.png" alt="Servicios Logo" class="sidebar-logo">
+        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
         <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
         <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
         <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
@@ -182,7 +182,7 @@
             const tbody = document.getElementById('clientsTableBody');
             try {
                 const { data, error } = await supabaseClient
-                    .from('servicios_clients')
+                    .from('clients')
                     .select('*')
                     .order('name', { ascending: true });
                 
@@ -235,7 +235,7 @@
             };
 
             try {
-                const { error } = await supabaseClient.from('servicios_clients').insert([newClient]);
+                const { error } = await supabaseClient.from('clients').insert([newClient]);
                 if (error) throw error;
                 
                 showNotification('Cliente registrado exitosamente.');
@@ -274,7 +274,7 @@
             };
 
             try {
-                const { error } = await supabaseClient.from('servicios_clients').update(updates).eq('id', id);
+                const { error } = await supabaseClient.from('clients').update(updates).eq('id', id);
                 if (error) throw error;
                 
                 showNotification('Cliente actualizado exitosamente.');
@@ -292,7 +292,7 @@
             if (!confirm(`Seguro que deseas eliminar al cliente ${name}?`)) return;
             
             try {
-                const { error } = await supabaseClient.from('servicios_clients').delete().eq('id', id);
+                const { error } = await supabaseClient.from('clients').delete().eq('id', id);
                 if (error) throw error;
                 
                 showNotification('Cliente eliminado exitosamente.');
@@ -307,6 +307,4 @@
     </script>
 </body>
 </html>
-
-
 
