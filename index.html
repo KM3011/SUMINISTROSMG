@@ -3,82 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meygo - Portal de Empresas</title>
-    <link rel="icon" type="image/png" href="assets/images/icon.png">
-    <link rel="manifest" href="manifest-index.json">
-    <meta name="theme-color" content="#1a1a2e">
-    <link rel="apple-touch-icon" href="assets/images/icon.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <title>Dashboard - Meygo ERP</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/admin.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-        body { height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: #1a1a2e; color: white; }
-        .header { padding: 20px; text-align: center; position: absolute; width: 100%; top: 0; z-index: 10; }
-        .header img { height: 50px; }
-        .split-container { display: flex; height: 100%; width: 100%; }
-        
-        .split-pane { 
-            flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            text-align: center; cursor: pointer; transition: all 0.5s ease; position: relative; overflow: hidden;
-            text-decoration: none; color: white; padding: 20px;
-        }
-        
-        .split-pane:hover { flex: 1.5; }
-        
-        .suministros { background: linear-gradient(135deg, #1e4b82 0%, #3a6cb3 100%); }
-        .servicios { background: linear-gradient(135deg, #e65100 0%, #f57c00 100%); }
-        
-        .split-pane::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.2); transition: all 0.5s ease; z-index: 1;
-        }
-        .split-pane:hover::before { background: rgba(0,0,0,0); }
-        
-        .content { position: relative; z-index: 2; transform: scale(0.9); transition: all 0.5s ease; }
-        .split-pane:hover .content { transform: scale(1.1); }
-        
-        .logo-img { height: 280px; margin-bottom: 25px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4)); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .logo-img:hover { transform: scale(1.1) rotate(-2deg); }
-        .servicios .logo-img { filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4)); }
-        
-        h1 { font-size: 3.8rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 15px; text-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        p { font-size: 1.4rem; opacity: 0.95; max-width: 500px; font-weight: 500; line-height: 1.6; }
-        
-        @media (max-width: 768px) {
-            .split-container { flex-direction: column; }
-            h1 { font-size: 2.5rem; }
-            .logo-img { height: 160px; }
-        }
+        .loading { opacity: 0.5; pointer-events: none; }
     </style>
 </head>
-<body>
-    <div class="split-container">
-        <a href="suministros.html" class="split-pane suministros">
-            <div class="content">
-                <img src="assets/images/logo.png" alt="Suministros Logo" class="logo-img">
-                <h1>SUMINISTROS</h1>
-                <p>Artículos de limpieza, suministros de víveres, papelería, herramientas, uniformes y más.</p>
-            </div>
-        </a>
-        <a href="servicios.html" class="split-pane servicios">
-            <div class="content">
-                <img src="assets/images/logo-servicios.png" alt="Servicios Logo" class="logo-img">
-                <h1>SERVICIOS</h1>
-                <p>Obras civiles, trabajos eléctricos, refrigeración y mantenimiento experto.</p>
-            </div>
-        </a>
+<body class="theme-suministros">
+    <div class="sidebar">
+        <img src="../assets/images/logo-servicios.png" alt="Servicios Logo" class="sidebar-logo">
+        <a href="index.html" class="nav-item active"><i class="ph ph-squares-four"></i> Dashboard</a>
+        <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
+        <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
+        <a href="finances.html" class="nav-item"><i class="ph ph-chart-line-up"></i> Finanzas</a>
+        <a href="receivables.html" class="nav-item"><i class="ph ph-hand-coins"></i> CxC</a>
+        <a href="clients.html" class="nav-item"><i class="ph ph-users"></i> Clientes</a>
+        <a href="users.html" class="nav-item"><i class="ph ph-users-three"></i> Usuarios</a>
+        <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Ajustes</a>
+        <a href="#" id="logoutBtn" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
     </div>
+
+    <div class="main-content page-fade-in" id="dashboardContent">
+        <div class="header stagger-1">
+            <h1>Resumen General</h1>
+            <a href="create_document.html" class="btn-primary"><i class="ph ph-plus"></i> Nuevo Documento</a>
+        </div>
+
+        <div class="summary-grid stagger-2">
+            <div class="summary-card">
+                <div class="summary-icon icon-green"><i class="ph ph-currency-dollar"></i></div>
+                <div class="summary-info">
+                    <h3>Ingresos (USD)</h3>
+                    <p id="totalIncomeUSD">Cargando...</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon icon-orange"><i class="ph ph-warning-circle"></i></div>
+                <div class="summary-info">
+                    <h3>Docs. Pendientes</h3>
+                    <p id="pendingDocs">Cargando...</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon icon-blue"><i class="ph ph-trend-up"></i></div>
+                <div class="summary-info">
+                    <h3>Tasa BCV (Estimada)</h3>
+                    <p id="bcv-rate">Cargando...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card stagger-3">
+            <h3>Documentos Recientes</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Cliente</th>
+                            <th>Monto USD</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentDocsTable">
+                        <tr><td colspan="4">Cargando datos desde Supabase...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
+
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('./sw.js').then(function(registration) {
-                    console.log('ServiceWorker registration successful');
-                }, function(err) {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check session
+            if (localStorage.getItem('admin_logged_in') !== 'true') {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('admin_logged_in');
+                localStorage.removeItem('admin_username');
+                window.location.href = '../index.html';
             });
-        }
+
+            // Fetch DolarAPI for BCV rate
+            fetch('https://ve.dolarapi.com/v1/dolares/oficial')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('bcv-rate').innerText = 'Bs. ' + data.promedio.toFixed(2);
+                })
+                .catch(() => {
+                    document.getElementById('bcv-rate').innerText = 'Error API';
+                });
+
+            // Fetch Data from Supabase
+            try {
+                // 1. Fetch Income
+                const { data: incomeData } = await supabaseClient
+                    .from('servicios_finances')
+                    .select('amount')
+                    .eq('type', 'Ingreso')
+                    .eq('currency', 'USD');
+
+                let totalUSD = 0;
+                if (incomeData) {
+                    totalUSD = incomeData.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
+                }
+                document.getElementById('totalIncomeUSD').innerText = '$' + totalUSD.toFixed(2);
+
+                // 2. Fetch Pending Docs
+                const { count: pendingCount } = await supabaseClient
+                    .from('servicios_documents')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'Pendiente');
+                document.getElementById('pendingDocs').innerText = pendingCount || 0;
+
+                // 3. Fetch Recent Docs
+                const { data: recentDocs, error: docsError } = await supabaseClient
+                    .from('servicios_documents')
+                    .select('*, servicios_clients(name)')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                const tableBody = document.getElementById('recentDocsTable');
+                if (docsError) throw docsError;
+
+                if (recentDocs && recentDocs.length > 0) {
+                    tableBody.innerHTML = '';
+                    recentDocs.forEach(doc => {
+                        const clientName = doc.servicios_clients ? doc.servicios_clients.name : 'N/A';
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><strong>${doc.type}</strong></td>
+                            <td>${clientName}</td>
+                            <td>$${parseFloat(doc.total).toFixed(2)}</td>
+                            <td>${new Date(doc.created_at).toLocaleDateString()}</td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="4">No hay documentos generados.</td></tr>';
+                }
+
+            } catch (err) {
+                console.error("Error fetching from Supabase:", err);
+                document.getElementById('recentDocsTable').innerHTML = `<tr><td colspan="4">Error cargando datos: ${err.message}</td></tr>`;
+            }
+        });
     </script>
 </body>
 </html>
+
+
+
+

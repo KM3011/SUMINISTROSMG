@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meygo - Portal de Empresas</title>
+    <link rel="icon" type="image/png" href="assets/images/icon.png">
+    <link rel="manifest" href="manifest-index.json">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="apple-touch-icon" href="assets/images/icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        body { height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: #1a1a2e; color: white; }
+        .header { padding: 20px; text-align: center; position: absolute; width: 100%; top: 0; z-index: 10; }
+        .header img { height: 50px; }
+        .split-container { display: flex; height: 100%; width: 100%; }
+        
+        .split-pane { 
+            flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            text-align: center; cursor: pointer; transition: all 0.5s ease; position: relative; overflow: hidden;
+            text-decoration: none; color: white; padding: 20px;
+        }
+        
+        .split-pane:hover { flex: 1.5; }
+        
+        .suministros { background: linear-gradient(135deg, #1e4b82 0%, #3a6cb3 100%); }
+        .servicios { background: linear-gradient(135deg, #e65100 0%, #f57c00 100%); }
+        
+        .split-pane::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.2); transition: all 0.5s ease; z-index: 1;
+        }
+        .split-pane:hover::before { background: rgba(0,0,0,0); }
+        
+        .content { position: relative; z-index: 2; transform: scale(0.9); transition: all 0.5s ease; }
+        .split-pane:hover .content { transform: scale(1.1); }
+        
+        .logo-img { height: 280px; margin-bottom: 25px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4)); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .logo-img:hover { transform: scale(1.1) rotate(-2deg); }
+        .servicios .logo-img { filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4)); }
+        
+        h1 { font-size: 3.8rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 15px; text-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        p { font-size: 1.4rem; opacity: 0.95; max-width: 500px; font-weight: 500; line-height: 1.6; }
+        
+        @media (max-width: 768px) {
+            .split-container { flex-direction: column; }
+            h1 { font-size: 2.5rem; }
+            .logo-img { height: 160px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="split-container">
+        <a href="suministros.html" class="split-pane suministros">
+            <div class="content">
+                <img src="assets/images/logo.png" alt="Suministros Logo" class="logo-img">
+                <h1>SUMINISTROS</h1>
+                <p>Artículos de limpieza, suministros de víveres, papelería, herramientas, uniformes y más.</p>
+            </div>
+        </a>
+        <a href="servicios.html" class="split-pane servicios">
+            <div class="content">
+                <img src="assets/images/logo-servicios.png" alt="Servicios Logo" class="logo-img">
+                <h1>SERVICIOS</h1>
+                <p>Obras civiles, trabajos eléctricos, refrigeración y mantenimiento experto.</p>
+            </div>
+        </a>
+    </div>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./sw.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful');
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
