@@ -1,5 +1,6 @@
-const CACHE_NAME = 'meygo-pwa-v2';
+const CACHE_NAME = 'meygo-pwa-v3';
 const urlsToCache = [
+  './',
   './index.html',
   './suministros.html',
   './servicios.html',
@@ -42,5 +43,11 @@ self.addEventListener('fetch', event => {
         }
         return fetch(event.request);
       })
+      .catch(() => {
+        if (event.request.mode === 'navigate') {
+          return caches.match('./index.html');
+        }
+      })
   );
 });
+

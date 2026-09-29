@@ -10,3 +10,13 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 
 // You can access the database through supabaseClient
 
+// Global Helper to get root index URL safely across GitHub Pages and subdirectories
+function getAdminRootIndex() {
+    const path = window.location.pathname;
+    const match = path.match(/^(.*\/SUMINISTROSMG\/)/i);
+    if (match) return match[1] + 'index.html';
+    const adminIdx = path.search(/\/admin_[^\/]+/i);
+    if (adminIdx !== -1) return path.substring(0, adminIdx) + '/index.html';
+    return '../index.html';
+}
+

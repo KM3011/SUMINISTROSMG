@@ -135,6 +135,128 @@ tbody tr:hover { background: #f8fafc; }
 .btn-sm.success:hover { background: #059669; }
 .btn-sm.warning { background: var(--danger); }
 
+/* Quick Client & Description Helper Styles */
+.quick-client-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+    transition: all 0.2s;
+}
+.quick-client-btn:hover, .quick-client-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+}
+
+.description-chips-container {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+.chip-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-right: 4px;
+    display: block;
+    width: 100%;
+}
+.desc-chip {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    user-select: none;
+}
+.desc-chip:hover, .desc-chip:active {
+    background: #1e4b82;
+    color: #ffffff;
+    border-color: #1e4b82;
+    transform: translateY(-1px);
+}
+
+.mobile-step-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    background: #f1f5f9;
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+.mobile-step-tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px 4px;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 8px;
+    color: #64748b;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.mobile-step-tab.active {
+    background: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(30, 75, 130, 0.25);
+}
+
+.qty-control-inline {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+.qty-btn-step {
+    background: #f1f5f9;
+    border: none;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #1e4b82;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.qty-btn-step:active {
+    background: #cbd5e1;
+}
+.qty-num {
+    padding: 0 10px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
 /* Staggered Animations */
 .stagger-1 { animation: fadeUp 0.4s ease-out 0.1s both; }
 .stagger-2 { animation: fadeUp 0.4s ease-out 0.2s both; }
@@ -147,7 +269,7 @@ tbody tr:hover { background: #f8fafc; }
 @media (max-width: 768px) {
     body {
         flex-direction: column;
-        padding-bottom: 70px; /* Space for bottom nav */
+        padding-bottom: 75px; /* Space for bottom nav */
     }
 
     /* Transform Sidebar into Bottom App Navigation */
@@ -200,7 +322,7 @@ tbody tr:hover { background: #f8fafc; }
 
     /* Main Content Adjustments */
     .main-content {
-        padding: 1.5rem 1rem;
+        padding: 1rem 0.8rem;
         height: auto;
         overflow: visible;
     }
@@ -218,7 +340,7 @@ tbody tr:hover { background: #f8fafc; }
         gap: 1rem;
     }
     .card {
-        padding: 1.5rem;
+        padding: 1.2rem;
     }
     
     /* Document Creator specifics */
@@ -229,6 +351,5 @@ tbody tr:hover { background: #f8fafc; }
         white-space: nowrap;
     }
     
-    /* Hide some text in bottom nav to fit better if needed, but flex-col works well */
     .nav-item { text-align: center; }
 }

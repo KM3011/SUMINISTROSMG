@@ -160,13 +160,13 @@
     <script>
         // Check session & Logout
         if (localStorage.getItem('admin_logged_in') !== 'true') {
-            window.location.href = '../index.html';
+            window.location.href = getAdminRootIndex();
         }
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('admin_logged_in');
             localStorage.removeItem('admin_username');
-            window.location.href = '../index.html';
+            window.location.href = getAdminRootIndex();
         });
 
         // Utils

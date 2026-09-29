@@ -70,13 +70,13 @@
 
     <script>
         if (localStorage.getItem('admin_logged_in') !== 'true') {
-            window.location.href = '../index.html';
+            window.location.href = getAdminRootIndex();
         }
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('admin_logged_in');
             localStorage.removeItem('admin_username');
-            window.location.href = '../index.html';
+            window.location.href = getAdminRootIndex();
         });
 
         function showNotification(msg, type = 'success') {
@@ -104,7 +104,7 @@
 
                 data.forEach(doc => {
                     const tr = document.createElement('tr');
-                    const clientName = doc.clients ? doc.clients.name : 'Cliente Eliminado';
+                    const clientName = doc.clients ? doc.clients.name : (doc.client_name || 'Consumidor Final');
                     const badgeClass = doc.status === 'Pagado' ? 'badge-pagado' : 'badge-pendiente';
                     
                     tr.innerHTML = `
@@ -225,11 +225,13 @@
                 doc.setFontSize(11);
                 doc.setTextColor(30, 75, 130);
                 doc.text('DATOS DEL CLIENTE', 18, currentY + 7);
-                doc.setFontSize(10);
-                doc.setTextColor(0, 0, 0);
-                doc.text(`Nombre: ${docData.clients ? docData.clients.name : 'N/A'}`, 18, currentY + 15);
-                doc.text(`RIF/Cedula: ${docData.clients ? docData.clients.rif : 'N/A'}`, 18, currentY + 20);
-                doc.text(`Direccion: ${docData.clients && docData.clients.address ? docData.clients.address.substring(0, 80) : 'N/A'}`, 18, currentY + 25);
+                const clientName = docData.clients ? docData.clients.name : (docData.client_name || 'Consumidor Final');
+                const clientRif = docData.clients ? docData.clients.rif : (docData.client_rif || 'V-00000000-0');
+                const clientAddr = docData.clients && docData.clients.address ? docData.clients.address : (docData.client_address || 'Contado / Sin Dirección');
+
+                doc.text(`Nombre: ${clientName}`, 18, currentY + 15);
+                doc.text(`RIF/Cedula: ${clientRif}`, 18, currentY + 20);
+                doc.text(`Direccion: ${clientAddr.substring(0, 80)}`, 18, currentY + 25);
 
                 // Items Table
                 let headArr = [];

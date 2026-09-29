@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meygo - Redireccionando...</title>
+    <script>
+        (function() {
+            var path = window.location.pathname;
+            var match = path.match(/^(.*\/SUMINISTROSMG\/)/i);
+            if (match) {
+                window.location.replace(match[1] + 'index.html');
+            } else {
+                var adminIdx = path.search(/\/admin_[^\/]+/i);
+                if (adminIdx !== -1) {
+                    window.location.replace(path.substring(0, adminIdx) + '/index.html');
+                } else {
+                    window.location.replace('index.html');
+                }
+            }
+        })();
+    </script>
+</head>
+<body style="background:#1a1a2e; color:white; font-family:sans-serif; text-align:center; padding-top:20vh;">
+    <h2>Página no encontrada</h2>
+    <p>Redireccionando al portal principal de Meygo...</p>
+    <a href="index.html" style="color:#3a6cb3;">Haga clic aquí si no es redireccionado automáticamente</a>
+</body>
+</html>

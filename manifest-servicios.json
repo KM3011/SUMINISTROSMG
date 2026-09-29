@@ -2,7 +2,7 @@
   "name": "Servicios Meygo",
   "short_name": "Servicios",
   "description": "Servicios Meygo C.A. - Obras y Mantenimiento",
-  "start_url": "./servicios.php",
+  "start_url": "./servicios.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#e65100",

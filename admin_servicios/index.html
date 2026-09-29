@@ -84,7 +84,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             // Check session
             if (localStorage.getItem('admin_logged_in') !== 'true') {
-                window.location.href = '../index.html';
+                window.location.href = getAdminRootIndex();
                 return;
             }
 
@@ -93,7 +93,7 @@
                 e.preventDefault();
                 localStorage.removeItem('admin_logged_in');
                 localStorage.removeItem('admin_username');
-                window.location.href = '../index.html';
+                window.location.href = getAdminRootIndex();
             });
 
             // Fetch DolarAPI for BCV rate

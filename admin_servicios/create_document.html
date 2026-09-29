@@ -27,7 +27,7 @@
 
         .new-container { width: 100%; background-color: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); padding: 25px; }
 
-        .header-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--color-border); background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%); border-radius: 8px; padding: 20px; color: white; }
+        .header-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--color-border); background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%); border-radius: 8px; padding: 20px; color: white; }
 
         .document-info { display:flex; justify-content: space-between; align-items: center; width: 100%; }
         .document-title { font-size: 24px; font-weight: bold; }
@@ -47,11 +47,11 @@
         .c-form-group input:focus, .c-form-group select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(0,0,0, 0.05); }
 
         .products-section { background-color: white; border-radius: 8px; padding: 20px; box-shadow: var(--shadow); border-top: 4px solid var(--color-success); margin-bottom: 25px; }
-        .product-form { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; gap: 15px; margin-bottom: 20px; padding: 15px; background-color: var(--color-light-bg); border-radius: 8px; align-items: end;}
+        .product-form { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1.2fr auto auto; gap: 12px; margin-bottom: 20px; padding: 15px; background-color: var(--color-light-bg); border-radius: 8px; align-items: end;}
 
         .products-table { width: 100%; border-collapse: collapse; font-size: 14px; }
         .products-table th { background-color: var(--color-primary); color: white; padding: 12px 15px; text-align: left; }
-        .products-table td { padding: 12px 15px; border-bottom: 1px solid var(--color-border); }
+        .products-table td { padding: 12px 15px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
         .products-table tr:nth-child(even) { background-color: var(--color-secondary); }
 
         .c-btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; color: white; justify-content: center;}
@@ -66,7 +66,7 @@
         /* Modal Styles */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;}
         .modal.active { display: flex; }
-        .modal-content { background-color: #fefefe; padding: 20px; border-radius: 8px; width: 80%; max-width: 600px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .modal-content { background-color: #fefefe; padding: 20px; border-radius: 8px; width: 90%; max-width: 600px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         .close-modal { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
         .close-modal:hover { color: black; }
         .client-list { max-height: 300px; overflow-y: auto; margin-top: 15px; border: 1px solid var(--color-border); border-radius: 6px;}
@@ -77,7 +77,7 @@
         /* Step Wizard Layout */
         .step { display: block; }
         .mobile-nav-buttons { display: none; }
-        .step-indicator { display: none; text-align: center; margin-bottom: 20px; font-weight: bold; color: var(--color-primary); }
+        .step-indicator { display: none; text-align: center; margin-bottom: 15px; font-weight: bold; color: var(--color-primary); }
 
         #notificationArea { margin-bottom: 1rem; }
         .alert { padding: 1rem; border-radius: 5px; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-weight: 500; }
@@ -85,24 +85,27 @@
         .alert-error { background: #fee2e2; color: #991b1b; }
 
         @media (max-width: 768px) {
+            .new-container { padding: 15px; }
             .step { display: none; }
-            .step.active { display: block; animation: fadeIn 0.4s; }
-            @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+            .step.active { display: block; animation: fadeIn 0.3s; }
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
             .mobile-nav-buttons { display: flex; justify-content: space-between; gap: 10px; margin-top: 20px; }
             .step-indicator { display: block; }
-            .document-info { flex-direction: column; gap: 15px; text-align: center; }
+            .document-info { flex-direction: column; gap: 12px; text-align: center; }
             .document-number { justify-content: center; width: 100%; }
-            .payment-methods { flex-direction: column; gap: 10px; }
-            .document-type-selector { flex-direction: column; gap: 10px; }
+            .payment-methods { flex-direction: column; gap: 8px; }
+            .document-type-selector { flex-direction: column; gap: 8px; }
             .info-section { grid-template-columns: 1fr; }
-            .product-form { grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px; }
-            .product-form .c-form-group:nth-child(1), .product-form .c-form-group:nth-child(5), .product-form .c-form-group:nth-child(6) { grid-column: 1 / -1; }
+            
+            .product-form { grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; }
+            .product-form .full-mobile { grid-column: 1 / -1; }
+            
             .products-table thead { display: none; }
             .products-table, .products-table tbody, .products-table tr, .products-table td { display: block; width: 100%; }
-            .products-table tr { margin-bottom: 15px; background: var(--color-light-bg) !important; border: 1px solid var(--color-border); border-radius: 8px; padding: 10px; }
-            .products-table td { padding: 10px 5px; border-bottom: 1px dashed var(--color-border); display: flex; justify-content: space-between; align-items: center; text-align: right; }
-            .products-table td:last-child { border-bottom: none; justify-content: center; padding-top: 15px;}
+            .products-table tr { margin-bottom: 15px; background: var(--color-light-bg) !important; border: 1px solid var(--color-border); border-radius: 10px; padding: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.04); }
+            .products-table td { padding: 8px 0; border-bottom: 1px dashed var(--color-border); display: flex; justify-content: space-between; align-items: center; text-align: right; }
+            .products-table td:last-child { border-bottom: none; justify-content: center; padding-top: 12px;}
             .products-table td::before { content: attr(data-label); font-weight: 600; color: var(--color-accent); float: left; text-align: left; margin-right: 15px; }
             .total { flex-direction: column; align-items: center; gap: 5px; text-align: center; }
         }
@@ -125,6 +128,13 @@
     <div class="main-content">
         <div id="notificationArea"></div>
         <div class="new-container">
+            <!-- Mobile Step Tabs Header -->
+            <div class="mobile-step-tabs" id="mobileStepTabs">
+                <button type="button" class="mobile-step-tab active" id="tab-step-1" onclick="jumpToStep(1)"><i class="fas fa-file-alt"></i> 1. Tipo</button>
+                <button type="button" class="mobile-step-tab" id="tab-step-2" onclick="jumpToStep(2)"><i class="fas fa-user"></i> 2. Cliente</button>
+                <button type="button" class="mobile-step-tab" id="tab-step-3" onclick="jumpToStep(3)"><i class="fas fa-boxes"></i> 3. Productos</button>
+            </div>
+            
             <div class="step-indicator" id="step-indicator">Paso 1 de 3</div>
 
             <form id="mainForm">
@@ -132,6 +142,7 @@
                 <input type="hidden" id="hiddenCurrencyMode" value="MIXTO">
                 <input type="hidden" id="hiddenClientId" value="">
 
+                <!-- STEP 1: Tipo de Documento & Moneda -->
                 <div class="step" id="step-1">
                     <div class="header-container">
                         <div class="document-info">
@@ -147,47 +158,52 @@
                         <div class="doc-type-btn" data-doctype="Factura"><i class="fas fa-receipt"></i> Factura</div>
                         <div class="doc-type-btn" data-doctype="Nota de Entrega"><i class="fas fa-truck"></i> Nota de Entrega</div>
                     </div>
-                    
+
                     <div id="newDocHidePricesContainer" style="display:none; text-align:center; margin-bottom:15px;">
-                        <label style="cursor:pointer; font-weight:bold; padding:8px; background:var(--color-light-bg); border-radius:6px; display:inline-block; border:1px solid var(--color-border);"><input type="checkbox" id="hidePricesNewCheckbox"> Ocultar montos en el PDF (Solo para Nota de Entrega)</label>
+                        <label style="cursor:pointer; font-weight:bold; padding:10px 15px; background:var(--color-light-bg); border-radius:6px; display:inline-block; border:1px solid var(--color-border);"><input type="checkbox" id="hidePricesNewCheckbox"> Ocultar montos en el PDF (Solo para Nota de Entrega)</label>
                     </div>
 
                     <div class="payment-methods">
                         <div class="payment-method active" data-payment="MIXTO"><i class="fas fa-exchange-alt"></i> Pago Mixto</div>
-                        <div class="payment-method" data-payment="USD"><i class="fas fa-dollar-sign"></i> Solo Dolares</div>
-                        <div class="payment-method" data-payment="VES"><i class="fas fa-bolt"></i> Solo Bolivares</div>
+                        <div class="payment-method" data-payment="USD"><i class="fas fa-dollar-sign"></i> Solo Dólares</div>
+                        <div class="payment-method" data-payment="VES"><i class="fas fa-bolt"></i> Solo Bolívares</div>
                     </div>
                 </div>
 
+                <!-- STEP 2: Datos del Cliente (Permite escribir libremente sin registrar) -->
                 <div class="step" id="step-2">
                     <div class="info-section">
                         <div class="c-card">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <h2><i class="fas fa-user"></i> Datos del Cliente</h2>
-                                <button type="button" class="c-btn c-btn-primary" onclick="document.getElementById('clientModal').classList.add('active')"><i class="fas fa-search"></i> Buscar</button>
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:15px;">
+                                <h2 style="margin:0;"><i class="fas fa-user"></i> Datos del Cliente</h2>
+                                <div style="display:flex; gap:8px;">
+                                    <button type="button" class="quick-client-btn" onclick="quickFillConsumidorFinal()"><i class="fas fa-bolt"></i> Consumidor Final</button>
+                                    <button type="button" class="c-btn c-btn-primary" style="padding: 8px 14px; font-size:13px;" onclick="document.getElementById('clientModal').classList.add('active')"><i class="fas fa-search"></i> Buscar</button>
+                                </div>
                             </div>
-                            <div class="c-form-group" style="margin-top:15px;">
-                                <label>Nombre de Cliente *</label>
-                                <input type="text" id="clientName" required>
+                            
+                            <div class="c-form-group">
+                                <label>Nombre / Razón Social <span style="font-weight:normal; color:#666;">(Opcional)</span></label>
+                                <input type="text" id="clientName" placeholder="Ej: Juan Pérez (ó dejar en blanco para Consumidor Final)">
                             </div>
                             <div class="c-form-group">
-                                <label>RIF/Cedula *</label>
-                                <input type="text" id="clientRIF" required>
+                                <label>RIF / Cédula <span style="font-weight:normal; color:#666;">(Opcional)</span></label>
+                                <input type="text" id="clientRIF" placeholder="Ej: J-12345678-9 ó V-00000000-0">
                             </div>
                             <div class="c-form-group">
-                                <label>Direccion del Cliente</label>
-                                <textarea id="clientAddress" rows="2"></textarea>
+                                <label>Dirección del Cliente <span style="font-weight:normal; color:#666;">(Opcional)</span></label>
+                                <textarea id="clientAddress" rows="2" placeholder="Ej: Av. Bolívar, Maracay (Opcional)"></textarea>
                             </div>
                         </div>
 
                         <div class="c-card">
-                            <h2><i class="fas fa-cog"></i> Configuracion de Cobro</h2>
+                            <h2><i class="fas fa-cog"></i> Configuración de Cobro</h2>
                             <div class="c-form-group">
-                                <label>Tasa del Dolar (BCV) <span id="fetch-status" style="color:var(--color-success); font-size: 12px;"></span></label>
+                                <label>Tasa del Dólar (BCV) <span id="fetch-status" style="color:var(--color-success); font-size: 12px;"></span></label>
                                 <input type="number" id="dollarRate" step="any" value="0.00" oninput="calculateAll()">
                             </div>
                             <div class="c-form-group">
-                                <label>Porcentaje de IVA (%) - Se calculara siempre</label>
+                                <label>Porcentaje de IVA (%)</label>
                                 <input type="number" id="ivaPercentage" step="any" value="16" oninput="calculateAll()">
                             </div>
                             <div class="c-form-group">
@@ -201,29 +217,49 @@
                     </div>
                 </div>
 
+                <!-- STEP 3: Productos / Servicios -->
                 <div class="step" id="step-3">
                     <div class="products-section">
                         <h2><i class="fas fa-boxes"></i> Productos / Servicios</h2>
+                        
                         <div class="product-form">
-                            <div class="c-form-group"><label>Descripcion</label><input type="text" id="pDesc"></div>
+                            <div class="c-form-group full-mobile" style="grid-column: 1 / -1;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+                                    <label style="margin:0;">Descripción del Producto / Servicio *</label>
+                                    <button type="button" onclick="clearProductInputs()" style="background:none; border:none; color:var(--color-danger); font-size:12px; font-weight:600; cursor:pointer;"><i class="fas fa-eraser"></i> Limpiar</button>
+                                </div>
+                                <input type="text" id="pDesc" placeholder="Escriba la descripción o pulse una sugerencia abajo..." autocomplete="off">
+                                
+                                <div class="description-chips-container" id="chipsContainer">
+                                    <span class="chip-label">Sugerencias rápidas:</span>
+                                    <span class="desc-chip" onclick="applyDescChip('Mantenimiento General')"><i class="fas fa-wrench"></i> Mantenimiento</span>
+                                    <span class="desc-chip" onclick="applyDescChip('Suministros Varios')"><i class="fas fa-box"></i> Suministros</span>
+                                    <span class="desc-chip" onclick="applyDescChip('Servicio Técnico')"><i class="fas fa-tools"></i> Servicio Técnico</span>
+                                    <span class="desc-chip" onclick="applyDescChip('Limpieza e Higiene')"><i class="fas fa-pump-soap"></i> Limpieza</span>
+                                    <span class="desc-chip" onclick="applyDescChip('Papelería y Oficina')"><i class="fas fa-file-invoice"></i> Papelería</span>
+                                    <span class="desc-chip" onclick="applyDescChip('Flete / Transporte')"><i class="fas fa-truck"></i> Flete</span>
+                                    <span class="desc-chip" onclick="applyDescChip('Repuestos / Insumos')"><i class="fas fa-cog"></i> Repuestos</span>
+                                </div>
+                            </div>
+                            
                             <div class="c-form-group"><label>Unidad</label><input type="text" id="pUnit" value="Und"></div>
-                            <div class="c-form-group"><label>Cantidad</label><input type="text" id="pQty" value="1" placeholder="Ej: 1,5"></div>
-                            <div class="c-form-group"><label>Precio Unit. ($)</label><input type="text" id="pPrice" placeholder="Ej: 15,50"></div>
-                            <div class="c-form-group"><label><input type="checkbox" id="pAplicaIva" checked> Aplica IVA</label></div>
-                            <div class="c-form-group"><button type="button" class="c-btn c-btn-primary" onclick="addExtItem()"><i class="fas fa-plus"></i></button></div>
+                            <div class="c-form-group"><label>Cantidad</label><input type="text" id="pQty" value="1" placeholder="Ej: 1"></div>
+                            <div class="c-form-group"><label>Precio Unit. ($)</label><input type="text" id="pPrice" placeholder="Ej: 15.50"></div>
+                            <div class="c-form-group" style="display:flex; align-items:center; height: 45px;"><label style="margin:0; cursor:pointer; font-weight:bold;"><input type="checkbox" id="pAplicaIva" checked> Aplica IVA</label></div>
+                            <div class="c-form-group"><button type="button" class="c-btn c-btn-primary" style="width:100%; height:45px;" onclick="addExtItem()"><i class="fas fa-plus"></i> Agregar</button></div>
                         </div>
 
                         <div class="table-responsive" style="overflow-x: auto; width: 100%;">
                             <table class="products-table">
                                 <thead>
                                     <tr>
-                                        <th>Descripcion</th>
+                                        <th>Descripción</th>
                                         <th>Unidad</th>
                                         <th>Cantidad</th>
                                         <th>Precio Unit. ($)</th>
                                         <th>Aplica IVA</th>
                                         <th>Precio Total ($)</th>
-                                        <th>Accion</th>
+                                        <th>Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody id="items-body">
@@ -241,7 +277,7 @@
                     </div>
 
                     <div style="text-align: center; margin-top: 30px;" id="final-submit-container">
-                        <button type="submit" id="submitDocBtn" class="c-btn c-btn-success" style="font-size: 1.2rem; padding: 15px 30px; box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);"><i class="fas fa-file-pdf"></i> Generar y Guardar Documento</button>
+                        <button type="submit" id="submitDocBtn" class="c-btn c-btn-success" style="font-size: 1.2rem; padding: 15px 30px; box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4); width: 100%; max-width: 400px;"><i class="fas fa-file-pdf"></i> Generar y Guardar Documento</button>
                     </div>
                 </div>
 
@@ -253,12 +289,12 @@
         </div>
     </div>
 
-    <!-- Client Modal -->
+    <!-- Client Search Modal -->
     <div id="clientModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="document.getElementById('clientModal').classList.remove('active')">&times;</span>
-            <h2 style="color: var(--color-primary); margin-bottom: 15px;"><i class="fas fa-users"></i> Seleccionar Cliente</h2>
-            <input type="text" id="clientSearch" placeholder="Buscar por nombre o RIF..." style="width:100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--color-border); border-radius: 6px; font-size: 16px;" onkeyup="filterClients()">
+            <h2 style="color: var(--color-primary); margin-bottom: 15px;"><i class="fas fa-users"></i> Seleccionar Cliente Guardado</h2>
+            <input type="text" id="clientSearch" placeholder="Buscar por nombre o RIF..." style="width:100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--color-border); border-radius: 6px; font-size: 16px;" onkeyup="filterClients()">
 
             <div class="client-list" id="modalClientList">
                 <div style="padding:15px; text-align:center; color:#666;">Cargando clientes...</div>
@@ -272,42 +308,151 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
     <script>
-        if (localStorage.getItem('admin_logged_in') !== 'true') window.location.href = '../index.html';
+        if (localStorage.getItem('admin_logged_in') !== 'true') window.location.href = getAdminRootIndex();
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
-            e.preventDefault(); localStorage.clear(); window.location.href = '../index.html';
+            e.preventDefault(); localStorage.clear(); window.location.href = getAdminRootIndex();
         });
 
-        function showNotification(msg, type = 'success') {
+        function showNotification(msg, type = 'success', scrollToTop = false) {
             const area = document.getElementById('notificationArea');
             const icon = type === 'success' ? 'ph-check-circle' : 'ph-warning';
             area.innerHTML = `<div class="alert alert-${type}"><i class="ph ${icon}"></i> ${msg}</div>`;
-            setTimeout(() => { area.innerHTML = ''; }, 4000);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => { 
+                if (area.innerHTML.includes(msg)) area.innerHTML = ''; 
+            }, 3000);
+            if (scrollToTop) window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Step Wizard Logic for Mobile
+        // Quick Fill Consumidor Final
+        function quickFillConsumidorFinal() {
+            document.getElementById('hiddenClientId').value = '';
+            document.getElementById('clientName').value = 'Consumidor Final';
+            document.getElementById('clientRIF').value = 'V-00000000-0';
+            document.getElementById('clientAddress').value = 'Contado / Sin Dirección';
+            showNotification('Datos de Consumidor Final cargados automáticamente.');
+        }
+
+        // Step Wizard & Tab Navigation
         let currentStep = 1; const totalSteps = 3;
         function updateSteps() {
-            if (window.innerWidth > 768) {
+            const isMobile = window.innerWidth <= 768;
+            if (!isMobile) {
                 document.querySelectorAll('.step').forEach(s => { s.style.display = 'block'; s.classList.remove('active'); });
-                document.getElementById('mobile-nav').style.display = 'none'; document.getElementById('step-indicator').style.display = 'none';
+                document.getElementById('mobile-nav').style.display = 'none'; 
+                document.getElementById('step-indicator').style.display = 'none';
+                document.getElementById('mobileStepTabs').style.display = 'none';
                 document.getElementById('final-submit-container').style.display = 'block';
             } else {
                 document.querySelectorAll('.step').forEach(s => { s.style.display = 'none'; s.classList.remove('active'); });
                 const activeStep = document.getElementById('step-' + currentStep);
                 if(activeStep) { activeStep.style.display = 'block'; activeStep.classList.add('active'); }
+                
                 document.getElementById('mobile-nav').style.display = 'flex';
                 document.getElementById('step-indicator').style.display = 'block';
+                document.getElementById('mobileStepTabs').style.display = 'flex';
                 document.getElementById('step-indicator').innerText = 'Paso ' + currentStep + ' de ' + totalSteps;
+                
+                // Update Step Tabs highlight
+                for (let i = 1; i <= totalSteps; i++) {
+                    const tabBtn = document.getElementById('tab-step-' + i);
+                    if (tabBtn) {
+                        if (i === currentStep) tabBtn.className = 'mobile-step-tab active';
+                        else tabBtn.className = 'mobile-step-tab';
+                    }
+                }
+
                 document.getElementById('btn-prev').style.display = currentStep === 1 ? 'none' : 'flex';
-                if (currentStep === totalSteps) { document.getElementById('btn-next').style.display = 'none'; document.getElementById('final-submit-container').style.display = 'block'; } 
-                else { document.getElementById('btn-next').style.display = 'flex'; document.getElementById('final-submit-container').style.display = 'none'; }
+                if (currentStep === totalSteps) { 
+                    document.getElementById('btn-next').style.display = 'none'; 
+                    document.getElementById('final-submit-container').style.display = 'block'; 
+                } else { 
+                    document.getElementById('btn-next').style.display = 'flex'; 
+                    document.getElementById('final-submit-container').style.display = 'none'; 
+                }
             }
         }
         function changeStep(dir) { currentStep += dir; if (currentStep < 1) currentStep = 1; if (currentStep > totalSteps) currentStep = totalSteps; updateSteps(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        window.addEventListener('resize', updateSteps); updateSteps();
+        function jumpToStep(stepNum) { currentStep = stepNum; updateSteps(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        window.addEventListener('resize', updateSteps);
 
-        // Fetch Dolar
+        // Description Chips & Fast Typing
+        function applyDescChip(text) {
+            document.getElementById('pDesc').value = text;
+            document.getElementById('pQty').focus();
+        }
+
+        function clearProductInputs() {
+            document.getElementById('pDesc').value = '';
+            document.getElementById('pQty').value = '1';
+            document.getElementById('pPrice').value = '';
+            document.getElementById('pDesc').focus();
+        }
+
+        // Enter key navigation between product fields
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSteps();
+            loadInitialData();
+            loadRecentDescriptionChips();
+
+            const pDesc = document.getElementById('pDesc');
+            const pQty = document.getElementById('pQty');
+            const pPrice = document.getElementById('pPrice');
+
+            if (pDesc) {
+                pDesc.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); pQty.focus(); }
+                });
+            }
+            if (pQty) {
+                pQty.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); pPrice.focus(); }
+                });
+            }
+            if (pPrice) {
+                pPrice.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); addExtItem(); }
+                });
+            }
+        });
+
+        // Save & Render Recent Description Chips from LocalStorage
+        function saveRecentDescription(desc) {
+            if (!desc || desc.length < 3) return;
+            try {
+                let recents = JSON.parse(localStorage.getItem('recent_desc_chips') || '[]');
+                if (!recents.includes(desc)) {
+                    recents.unshift(desc);
+                    if (recents.length > 8) recents.pop();
+                    localStorage.setItem('recent_desc_chips', JSON.stringify(recents));
+                    renderRecentChips(recents);
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function loadRecentDescriptionChips() {
+            try {
+                let recents = JSON.parse(localStorage.getItem('recent_desc_chips') || '[]');
+                if (recents.length > 0) renderRecentChips(recents);
+            } catch(e) { console.error(e); }
+        }
+
+        function renderRecentChips(recents) {
+            const container = document.getElementById('chipsContainer');
+            if (!container) return;
+            // Clear custom ones while retaining defaults
+            const existingChips = Array.from(container.querySelectorAll('.desc-chip-custom'));
+            existingChips.forEach(c => c.remove());
+
+            recents.forEach(desc => {
+                const chip = document.createElement('span');
+                chip.className = 'desc-chip desc-chip-custom';
+                chip.innerHTML = `<i class="fas fa-history"></i> ${desc.substring(0, 25)}`;
+                chip.onclick = () => applyDescChip(desc);
+                container.appendChild(chip);
+            });
+        }
+
+        // Fetch Dollar BCV
         fetch('https://ve.dolarapi.com/v1/dolares/oficial').then(res => res.json()).then(data => {
             document.getElementById('dollarRate').value = data.promedio.toFixed(2);
             document.getElementById('fetch-status').innerText = "(Tasa Oficial BCV)"; calculateAll();
@@ -320,14 +465,12 @@
 
         async function loadInitialData() {
             try {
-                // 1. Settings
                 const { data: setD } = await supabaseClient.from('settings').select('*').limit(1);
                 if (setD && setD.length > 0) {
                     settingsData = setD[0];
                     updateControlNumber('Presupuesto');
                 }
                 
-                // 2. Clients
                 const { data: cliD } = await supabaseClient.from('clients').select('*');
                 if (cliD) {
                     clientsData = cliD;
@@ -349,14 +492,14 @@
             const container = document.getElementById('modalClientList');
             container.innerHTML = '';
             if (clientsData.length === 0) {
-                container.innerHTML = '<div style="padding:15px; text-align:center; color:#666;">No hay clientes guardados. Escriba los datos manualmente en el formulario.</div>';
+                container.innerHTML = '<div style="padding:15px; text-align:center; color:#666;">No hay clientes guardados. Escriba los datos directamente en el formulario.</div>';
                 return;
             }
             clientsData.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'client-item';
                 div.onclick = () => { selectClient(c.id, c.name, c.rif, c.address); };
-                div.innerHTML = `<strong>${c.name}</strong><span style="font-size: 13px; color: #666;">RIF: ${c.rif || ''}</span>`;
+                div.innerHTML = `<strong>${c.name}</strong><span style="font-size: 13px; color: #666;">RIF: ${c.rif || 'N/A'}</span>`;
                 container.appendChild(div);
             });
         }
@@ -410,25 +553,34 @@
         function parseLocalNumber(val) {
             if(!val) return 0;
             if(typeof val === 'number') return val;
-            let str = val.replace(',', '.'); return parseFloat(str) || 0;
+            let str = val.toString().replace(',', '.'); return parseFloat(str) || 0;
         }
 
         function addExtItem() {
-            const desc = document.getElementById('pDesc').value;
-            const unit = document.getElementById('pUnit').value || 'Und';
+            const desc = document.getElementById('pDesc').value.trim();
+            const unit = document.getElementById('pUnit').value.trim() || 'Und';
             const qty = parseLocalNumber(document.getElementById('pQty').value) || 1;
             const price = parseLocalNumber(document.getElementById('pPrice').value);
             const aplicaIva = document.getElementById('pAplicaIva').checked;
 
-            if(!desc || !price) return;
+            if(!desc) { alert('Por favor escriba la descripción del producto.'); document.getElementById('pDesc').focus(); return; }
+            if(!price || price <= 0) { alert('Por favor ingrese un precio válido.'); document.getElementById('pPrice').focus(); return; }
+
+            saveRecentDescription(desc);
 
             itemsList.push({ description: desc, unit: unit, quantity: qty, price: price, aplica_iva: aplicaIva });
             renderItems();
 
-            document.getElementById('pDesc').value = '';
-            document.getElementById('pQty').value = '1';
-            document.getElementById('pPrice').value = '';
-            document.getElementById('pAplicaIva').checked = true;
+            clearProductInputs();
+            showNotification('Producto ingresado', 'success', false);
+        }
+
+        function changeItemQty(index, delta) {
+            if (itemsList[index]) {
+                itemsList[index].quantity += delta;
+                if (itemsList[index].quantity <= 0) itemsList[index].quantity = 1;
+                renderItems();
+            }
         }
 
         function renderItems() {
@@ -437,13 +589,19 @@
             itemsList.forEach((item, index) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td data-label="Descripcion">${item.description}</td>
+                    <td data-label="Descripción"><strong>${item.description}</strong></td>
                     <td data-label="Unidad">${item.unit}</td>
-                    <td data-label="Cantidad">${item.quantity}</td>
+                    <td data-label="Cantidad">
+                        <div class="qty-control-inline">
+                            <button type="button" class="qty-btn-step" onclick="changeItemQty(${index}, -1)">-</button>
+                            <span class="qty-num">${item.quantity}</span>
+                            <button type="button" class="qty-btn-step" onclick="changeItemQty(${index}, 1)">+</button>
+                        </div>
+                    </td>
                     <td data-label="Precio Unit. ($)">$${item.price.toFixed(2)}</td>
-                    <td data-label="Aplica IVA">${item.aplica_iva ? '<span style="color:var(--color-success);"><i class="fas fa-check"></i></span>' : '<span style="color:var(--color-danger);"><i class="fas fa-times"></i></span>'}</td>
-                    <td data-label="Precio Total ($)" class="i-total">$${(item.quantity * item.price).toFixed(2)}</td>
-                    <td data-label="Accion"><button type="button" class="c-btn c-btn-danger" onclick="removeItem(${index})"><i class="fas fa-trash"></i> Eliminar</button></td>
+                    <td data-label="Aplica IVA">${item.aplica_iva ? '<span style="color:var(--color-success); font-weight:bold;"><i class="fas fa-check"></i> Sí</span>' : '<span style="color:var(--color-danger); font-weight:bold;"><i class="fas fa-times"></i> No</span>'}</td>
+                    <td data-label="Precio Total ($)" class="i-total" style="font-weight:bold; color:var(--color-primary);">$${(item.quantity * item.price).toFixed(2)}</td>
+                    <td data-label="Acción"><button type="button" class="c-btn c-btn-danger" style="padding: 6px 12px; font-size:12px;" onclick="removeItem(${index})"><i class="fas fa-trash"></i> Eliminar</button></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -470,15 +628,13 @@
 
             currentTotals = { subtotal: subtotalGeneral, tax: ivaAmount, total: totalUSD };
 
-            document.getElementById('subtotalDisplay').innerText = "$" + subtotalIva.toFixed(2);
+            document.getElementById('subtotalDisplay').innerText = "$" + subtotalGeneral.toFixed(2);
             document.getElementById('exentoDisplay').innerText = "$" + subtotalExento.toFixed(2);
             document.getElementById('ivaLabel').innerText = ivaPerc;
             document.getElementById('ivaAmount').innerText = "$" + ivaAmount.toFixed(2);
             document.getElementById('totalUSDAmount').innerText = "$" + totalUSD.toFixed(2);
             document.getElementById('totalVESAmount').innerText = "Bs. " + totalVES.toFixed(2);
         }
-
-        document.getElementById('pPrice').addEventListener('keypress', function (e) { if (e.key === 'Enter') { e.preventDefault(); addExtItem(); } });
 
         function generatePDFDownload() {
             const { jsPDF } = window.jspdf;
@@ -495,6 +651,10 @@
             const controlNum = document.getElementById('control_number').value;
             const today = new Date().toLocaleDateString();
 
+            const cName = document.getElementById('clientName').value.trim() || 'Consumidor Final';
+            const cRif = document.getElementById('clientRIF').value.trim() || 'V-00000000-0';
+            const cAddress = document.getElementById('clientAddress').value.trim() || 'Contado / Sin Dirección';
+
             let titleText = finalType.toUpperCase();
             if (isSinPrecios) titleText = 'NOTA DE ENTREGA';
 
@@ -510,8 +670,8 @@
                 doc.setTextColor(100, 100, 100);
                 if(settingsData) {
                     doc.text(`RIF: ${settingsData.rif || ''}`, 14, currentY + 8);
-                    doc.text(`Direccion: ${settingsData.address || ''}`, 14, currentY + 13);
-                    doc.text(`Telefono: ${settingsData.phone || ''}`, 14, currentY + 18);
+                    doc.text(`Dirección: ${settingsData.address || ''}`, 14, currentY + 13);
+                    doc.text(`Teléfono: ${settingsData.phone || ''}`, 14, currentY + 18);
                 }
                 
                 doc.setFontSize(16);
@@ -528,7 +688,7 @@
                 currentY = 50;
             }
 
-            // Client Info
+            // Client Info Box
             doc.setFillColor(240, 245, 250);
             doc.rect(14, currentY, 182, 35, 'F');
             doc.setFontSize(11);
@@ -536,9 +696,9 @@
             doc.text('DATOS DEL CLIENTE', 18, currentY + 7);
             doc.setFontSize(10);
             doc.setTextColor(0, 0, 0);
-            doc.text(`Nombre: ${document.getElementById('clientName').value}`, 18, currentY + 15);
-            doc.text(`RIF/Cedula: ${document.getElementById('clientRIF').value}`, 18, currentY + 20);
-            doc.text(`Direccion: ${document.getElementById('clientAddress').value.substring(0, 80)}`, 18, currentY + 25);
+            doc.text(`Nombre: ${cName}`, 18, currentY + 15);
+            doc.text(`RIF/Cédula: ${cRif}`, 18, currentY + 20);
+            doc.text(`Dirección: ${cAddress.substring(0, 80)}`, 18, currentY + 25);
 
             // Items Table
             const rate = parseLocalNumber(document.getElementById('dollarRate').value) || 1;
@@ -547,28 +707,28 @@
             let tableBody = [];
             
             if (isSinPrecios) {
-                headArr = [['Descripcion', 'Cant.', 'IVA']];
+                headArr = [['Descripción', 'Cant.', 'IVA']];
                 tableBody = itemsList.map(item => [
                     item.description,
                     item.quantity,
-                    item.aplica_iva ? 'Si' : 'No'
+                    item.aplica_iva ? 'Sí' : 'No'
                 ]);
             } else if (isFactura) {
-                headArr = [['Descripcion', 'Cant.', 'Precio Unit. (Bs)', 'IVA', 'Total (Bs)']];
+                headArr = [['Descripción', 'Cant.', 'Precio Unit. (Bs)', 'IVA', 'Total (Bs)']];
                 tableBody = itemsList.map(item => [
                     item.description,
                     item.quantity,
                     'Bs. ' + (item.price * rate).toFixed(2),
-                    item.aplica_iva ? 'Si' : 'No',
+                    item.aplica_iva ? 'Sí' : 'No',
                     'Bs. ' + (item.quantity * item.price * rate).toFixed(2)
                 ]);
             } else {
-                headArr = [['Descripcion', 'Cant.', 'Precio Unit.', 'IVA', 'Total']];
+                headArr = [['Descripción', 'Cant.', 'Precio Unit.', 'IVA', 'Total']];
                 tableBody = itemsList.map(item => [
                     item.description,
                     item.quantity,
                     '$' + item.price.toFixed(2),
-                    item.aplica_iva ? 'Si' : 'No',
+                    item.aplica_iva ? 'Sí' : 'No',
                     '$' + (item.quantity * item.price).toFixed(2)
                 ]);
             }
@@ -626,10 +786,10 @@
         // Submit Form
         document.getElementById('mainForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (itemsList.length === 0) { alert('Debes agregar al menos un producto.'); return; }
+            if (itemsList.length === 0) { alert('Debes agregar al menos un producto o servicio.'); return; }
 
             const btn = document.getElementById('submitDocBtn');
-            btn.disabled = true; btn.innerHTML = 'Guardando...';
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
             const clientId = document.getElementById('hiddenClientId').value;
             const docTypeRaw = document.getElementById('hiddenDocType').value;
@@ -638,15 +798,40 @@
                 finalType = 'Nota de Entrega (Sin Precios)';
             }
             const controlNum = document.getElementById('control_number').value;
-            
-            // Format YYYY-MM-DD
             const today = new Date().toISOString().split('T')[0];
 
+            const cName = document.getElementById('clientName').value.trim() || 'Consumidor Final';
+            const cRif = document.getElementById('clientRIF').value.trim() || 'V-00000000-0';
+            const cAddress = document.getElementById('clientAddress').value.trim() || 'Contado / Sin Dirección';
+
             try {
-                // 1. Insert Document
-                const docPayload = {
+                let finalClientId = clientId ? parseInt(clientId) : null;
+
+                // Auto-create/find client in clients table if not explicitly selected from modal,
+                // ensuring it is NEVER saved as N/A in DB or relationships.
+                if (!finalClientId && cName) {
+                    try {
+                        const existing = clientsData.find(c => c.name.trim().toLowerCase() === cName.toLowerCase());
+                        if (existing) {
+                            finalClientId = existing.id;
+                        } else {
+                            const { data: newCli, error: cliErr } = await supabaseClient
+                                .from('clients')
+                                .insert([{ name: cName, rif: cRif, address: cAddress }])
+                                .select();
+                            if (!cliErr && newCli && newCli.length > 0) {
+                                finalClientId = newCli[0].id;
+                                clientsData.push(newCli[0]);
+                            }
+                        }
+                    } catch(e) { console.error('Error auto-creating client record:', e); }
+                }
+
+                // 1. Insert Document with full written client info fallback
+                let docPayload = {
                     control_number: controlNum,
-                    client_id: clientId ? parseInt(clientId) : null, // If they typed manually, we'd need a client_id. Since schema requires FK, we assume they selected from modal.
+                    client_id: finalClientId,
+                    client_name: cName,
                     type: finalType,
                     date: today,
                     status: document.getElementById('docStatus').value,
@@ -656,7 +841,16 @@
                     created_by: localStorage.getItem('admin_username') || 'admin'
                 };
 
-                const { data: insertedDoc, error: docErr } = await supabaseClient.from('documents').insert([docPayload]).select();
+                let { data: insertedDoc, error: docErr } = await supabaseClient.from('documents').insert([docPayload]).select();
+                
+                // Retry fallback if database schema does not have client_name column
+                if (docErr && docErr.message && docErr.message.includes('client_name')) {
+                    delete docPayload.client_name;
+                    const retry = await supabaseClient.from('documents').insert([docPayload]).select();
+                    insertedDoc = retry.data;
+                    docErr = retry.error;
+                }
+                
                 if (docErr) throw docErr;
                 
                 const newDocId = insertedDoc[0].id;
@@ -686,16 +880,13 @@
                 generatePDFDownload();
 
                 showNotification('Documento emitido y guardado exitosamente. Descargando PDF...');
-                setTimeout(() => { window.location.href = 'documents_registry.html'; }, 3000);
+                setTimeout(() => { window.location.href = 'documents_registry.html'; }, 2500);
                 
             } catch (err) {
                 showNotification(err.message, 'error');
                 btn.disabled = false; btn.innerHTML = '<i class="fas fa-file-pdf"></i> Generar y Guardar Documento';
             }
         });
-
-        document.addEventListener('DOMContentLoaded', loadInitialData);
     </script>
 </body>
 </html>
-

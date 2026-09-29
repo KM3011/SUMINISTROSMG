@@ -109,13 +109,13 @@
 
     <script>
         if (localStorage.getItem('admin_logged_in') !== 'true') {
-            window.location.href = '../index.html';
+            window.location.href = getAdminRootIndex();
         }
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('admin_logged_in');
             localStorage.removeItem('admin_username');
-            window.location.href = '../index.html';
+            window.location.href = getAdminRootIndex();
         });
 
         function showNotification(msg, type = 'success') {
@@ -149,7 +149,7 @@
                     const tr = document.createElement('tr');
                     totalDeuda += parseFloat(doc.total);
                     
-                    const clientName = doc.clients ? doc.clients.name : 'Cliente Desconocido';
+                    const clientName = doc.clients ? doc.clients.name : (doc.client_name || 'Consumidor Final');
                     
                     tr.innerHTML = `
                         <td><strong>${doc.control_number}</strong></td>
